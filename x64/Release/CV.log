@@ -1,0 +1,11 @@
+﻿  OpenImg.cpp
+C:\Users\franc\source\repos\CV\CV\OpenImg.cpp(15,10): error C2451: un'espressione condizionale di tipo 'cv::MatExpr' non è valida
+C:\Users\franc\source\repos\CV\CV\OpenImg.cpp(15,10): message : Non è disponibile alcun operatore di conversione definito dall'utente oppure non è possibile chiamare l'operatore
+  Task2.cpp
+C:\Users\franc\source\repos\CV\CV\Task2.cpp(1,10): fatal  error C1083: Non è possibile aprire il file inclusione: 'opencv/highgui.hpp': No such file or directory
+  Task3.cpp
+C:\Users\franc\source\repos\CV\CV\Task3.cpp(1,10): fatal  error C1083: Non è possibile aprire il file inclusione: 'opencv/highgui.hpp': No such file or directory
+  Task4.cpp
+C:\Users\franc\source\repos\CV\CV\Task4.cpp(1,10): fatal  error C1083: Non è possibile aprire il file inclusione: 'opencv/highgui.hpp': No such file or directory
+  Task5.cpp
+C:\Users\franc\source\repos\CV\CV\Task5.cpp(1,10): fatal  error C1083: Non è possibile aprire il file inclusione: 'opencv/highgui.hpp': No such file or directory
