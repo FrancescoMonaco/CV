@@ -1,7 +1,2 @@
-﻿  processing_7.cpp
-C:\Users\franc\source\repos\CV\CV\processing_7.cpp(51,70): warning C4267: 'argomento': conversione da 'size_t' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=int
-          ]
+﻿  processing_8.cpp
   CV.vcxproj -> C:\Users\franc\source\repos\CV\x64\Debug\CV.exe

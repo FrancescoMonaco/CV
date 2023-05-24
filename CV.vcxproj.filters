@@ -18,13 +18,10 @@
     <ClCompile Include="CV.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Lab7.cpp">
+    <ClCompile Include="Lab8.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="processing_7.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="panoramic_utils.cpp">
+    <ClCompile Include="processing_8.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,10 +29,7 @@
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="processing_7.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="panoramic_utils.h">
+    <ClInclude Include="processing_8.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,26 +1,25 @@
-#include "processing_7.h"
+#include "processing_8.h"
 #include <stdexcept>
 #include <string>
 #include <vector>
 #include <iostream>
-using namespace cv;
 using namespace std;
+using namespace cv;
 
 int main(int argc, char** argv) {
     // check argc
-    vector<Mat> images;
+    vector<cv::Mat> images;
 
-    string folder("/Users/franc/Downloads/kitchen/*.bmp");
+    string folder("/Users/franc/Downloads/calibr/*.png");
     vector<cv::String> filenames;
-    cv::glob(folder, filenames, false);
+    glob(folder, filenames, false);
 
     for (auto& str : filenames) {
         Mat img = imread(str);
         images.push_back(img);
     }
 
-    cout << filenames.size() << endl << images.size() << endl;
-    stitch(images);
+    calibrate(images);
 
     waitKey(0);
     return 0;
