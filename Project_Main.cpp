@@ -23,6 +23,7 @@ int main(int argc, char** argv) {
         //imshow("img", image);
         std::vector<Vec3f> circles;
         Mat grayscale;
+        Mat mask = Mat::zeros(image.size(), CV_8UC1);
         cvtColor(image, grayscale, cv::COLOR_BGR2GRAY);
         HoughCircles(grayscale, circles, HOUGH_GRADIENT, 1, grayscale.rows/4, 120, 10, 250, 10);
         for (size_t i = 0; i < circles.size(); i++)
@@ -30,9 +31,12 @@ int main(int argc, char** argv) {
             Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
             int radius = cvRound(circles[i][2]);
             // draw the outline
-            circle(image, center, radius, Scalar(0, 30, 205), 2, LINE_AA);
+            //circle(image, center, radius, Scalar(0, 30, 205), 2, LINE_AA);
+            circle(mask, center, radius, Scalar(255), -1);
         }
-        imshow("Road detection", image);
+        Mat result;
+        image.copyTo(result, mask);
+        imshow("Masked", result);
 
        // cvtColor(image, grayscale, cv::COLOR_BGR2GRAY);
         //imshow("gray", grayscale);
