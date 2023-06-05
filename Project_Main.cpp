@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     // check argc
     vector<cv::Mat> images;
 
-    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray5/*.jpg");
+    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray8/*.jpg");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
 
@@ -24,8 +24,8 @@ int main(int argc, char** argv) {
         std::vector<Vec3f> circles;
         Mat grayscale;
         cvtColor(image, grayscale, cv::COLOR_BGR2GRAY);
-        HoughCircles(grayscale, circles, HOUGH_GRADIENT, 1, grayscale.rows/25, 120, 10, 250, 350);
-        for (size_t i = 0; i < 1; i++)
+        HoughCircles(grayscale, circles, HOUGH_GRADIENT, 1, grayscale.rows/4, 120, 10, 250, 10);
+        for (size_t i = 0; i < circles.size(); i++)
         {
             Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
             int radius = cvRound(circles[i][2]);
