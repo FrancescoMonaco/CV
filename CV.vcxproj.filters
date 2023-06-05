@@ -18,10 +18,10 @@
     <ClCompile Include="CV.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Lab8.cpp">
+    <ClCompile Include="Project_Main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="processing_8.cpp">
+    <ClCompile Include="processing.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +29,7 @@
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="processing_8.h">
+    <ClInclude Include="processing.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

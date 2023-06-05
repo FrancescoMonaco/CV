@@ -1,4 +1,4 @@
-#include "processing_8.h"
+#include "processing.h"
 using namespace std;
 using namespace cv;
 
@@ -26,7 +26,4 @@ void calibrate(std::vector<cv::Mat> images)
 
 	// Calibration
 	vector<vector<Vec3f>> points;
-
-	calibrateCamera(points, projections, images[0].size, Mat::zeros(Size(3,3), CV_8UC1),\
-		Mat::zeros(Size(14, 1), CV_8UC1), , , CALIB_USE_INTRINSIC_GUESS);
 }
