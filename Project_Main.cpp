@@ -16,6 +16,11 @@ int main(int argc, char** argv) {
     vector<cv::String> filenames;
     glob(folder, filenames, false);
 
+
+    Mat bread_template = imread("/Users/franc/Downloads/bread_template.jpg");
+    if (bread_template.data == NULL)
+        throw invalid_argument("Data does not exist");
+
     for (auto& str : filenames) {
         Mat img = imread(str);
         images.push_back(img);
@@ -38,7 +43,7 @@ int main(int argc, char** argv) {
             circle(mask, center, radius, Scalar(255), -1);
         }
         // Code for the inverse mask
-        Mat inverse_mask, mask2;
+        Mat inverse_mask, mask2, mask3, bread_image2;
         bitwise_not(mask, inverse_mask);
         Mat result;
         image.copyTo(result, inverse_mask);
@@ -51,23 +56,36 @@ int main(int argc, char** argv) {
         Mat hue_channel = hsv_channels[0];
         Mat sat_channel = hsv_channels[1];
         Mat value_channel = hsv_channels[2];
-
-        inRange(hue_channel, 11, 19, mask2); //threshold for bread hue
-
-        Mat bread_image;
+        inRange(sat_channel, 70, 150, mask3); // only for tray 5
+        inRange(hue_channel, 10, 70, mask2); //threshold for bread hue
+        Mat bread_image, matchOut;
         bitwise_and(result, result, bread_image, mask2);
-        Mat gradient;
-        Sobel(bread_image, gradient, CV_8U, 2, 2);
-        imshow("Gradient", gradient);
+        bitwise_and(bread_image, bread_image, bread_image2, mask3);
+        imshow("Hue", bread_image2);
+
+        matchTemplate(bread_image2, bread_template, matchOut, TM_SQDIFF);
+
+        //imshow("Output", matchOut);
+        double* minVal = {}, * maxVal = {};
+        Point minLoc, maxLoc;
+
+        minMaxLoc(matchOut, minVal, maxVal, &minLoc, &maxLoc);
+        Point end = Point((minLoc).x + bread_template.cols, (minLoc).y + bread_template.rows);
+        rectangle(result, minLoc, end, Scalar(0,0,255));
+        imshow("Rec", result);
+  
+       // Mat gradient;
+        //Sobel(bread_image, gradient, CV_8U, 2, 2);
+       // imshow("Gradient", gradient);
        // 
-        watershed(gradient, bread_image);
+       // watershed(gradient, bread_image);
 
        // Mat edges, img;
       //  bilateralFilter(bread_image, img, 5, 150, 150);
         //imshow("Bread Image", img);
         //Canny(img, edges, 10, 100, 3);
         //imshow("Canny image", edges);
-        //kmeans(bread_image);
+       // kmeans(bread_image);
 
         /*
         cvtColor(result, result, COLOR_BGR2HLS);
@@ -188,6 +206,7 @@ void kmeans(cv::Mat& img)
     medianBlur(img, temp, 9);
     GaussianBlur(temp, img, Size(3, 3), 3);
 
+    /*
     Vec3b colorRef(20, 30, 170); // yellows
     Vec3b buf(155, 155, 190);
 
@@ -200,7 +219,10 @@ void kmeans(cv::Mat& img)
     //imshow("masked", temp);
     dst.convertTo(data, CV_32F);
     data = data.reshape(1, data.total());
+    */
 
+    img.convertTo(data, CV_32F);
+    data = data.reshape(1, data.total());
     // do kmeans
     Mat labels, centers;
     kmeans(data, 2, labels, TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 10, 1.0), 3,
