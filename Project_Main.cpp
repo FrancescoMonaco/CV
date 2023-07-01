@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
     // check argc
     vector<cv::Mat> images;
 
-    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray1/*.jpg");
+    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray7/*.jpg");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
 
@@ -43,37 +43,8 @@ int main(int argc, char** argv) {
             circle(mask, center, radius, Scalar(255), -1);
         }
         // Code for the inverse mask
-        Mat inverse_mask, mask2, mask3, bread_image2;
-        bitwise_not(mask, inverse_mask);
-        Mat result;
-        image.copyTo(result, inverse_mask);
-
-        Mat hsv_image;
-        cvtColor(result, hsv_image, COLOR_BGR2HSV);
-        std::vector<Mat> hsv_channels;
-        split(hsv_image, hsv_channels);
-
-        Mat hue_channel = hsv_channels[0];
-        Mat sat_channel = hsv_channels[1];
-        Mat value_channel = hsv_channels[2];
-        inRange(sat_channel, 70, 150, mask3); // only for tray 5
-        inRange(hue_channel, 10, 70, mask2); //threshold for bread hue
-        Mat bread_image, matchOut;
-        bitwise_and(result, result, bread_image, mask2);
-        bitwise_and(bread_image, bread_image, bread_image2, mask3);
-        imshow("Hue", bread_image2);
-
-        matchTemplate(bread_image2, bread_template, matchOut, TM_SQDIFF);
-
-        //imshow("Output", matchOut);
-        double* minVal = {}, * maxVal = {};
-        Point minLoc, maxLoc;
-
-        minMaxLoc(matchOut, minVal, maxVal, &minLoc, &maxLoc);
-        Point end = Point((minLoc).x + bread_template.cols, (minLoc).y + bread_template.rows);
-        rectangle(result, minLoc, end, Scalar(0,0,255));
-        imshow("Rec", result);
-  
+       
+        cout << minVal << endl;
        // Mat gradient;
         //Sobel(bread_image, gradient, CV_8U, 2, 2);
        // imshow("Gradient", gradient);

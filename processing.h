@@ -7,8 +7,13 @@
 
 
 /**
-* @param vec vector of images
+* The function finds the bounding boxes of the bread and then creates the segmentation
+* @param images vector of images
+* @param bounding_boxes vectors that contains the bounding boxes
+* @param segments vector that contains the segmentation till now
 */
-void calibrate(std::vector<cv::Mat> images);
+void breadFinder(std::vector<cv::Mat> images, std::vector<cv::Mat> bounding_boxes, std::vector<cv::Mat> segments);
+
+cv::Mat breadBox(cv::Mat& image);
 
 #endif
