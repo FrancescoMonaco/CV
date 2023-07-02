@@ -1,5 +1,2 @@
-﻿  Project_Main.cpp
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(113,28): warning C4305: 'inizializzazione': troncamento da 'double' a 'float'
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(225,40): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(238,41): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
+﻿  processing.cpp
   CV.vcxproj -> C:\Users\franc\source\repos\CV\x64\Debug\CV.exe

@@ -1,4 +1,5 @@
 #include "processing.h"
+#include <iostream>
 using namespace std;
 using namespace cv;
 
@@ -32,13 +33,14 @@ void breadFinder(std::vector<cv::Mat> images, std::vector<cv::Mat> bounding_boxe
 {
     
     for (auto& image : images) {
-        bounding_boxes.push_back(breadBox(image));
+        breadBox(image);
     }
 }
 
-cv::Mat breadBox(cv::Mat& image)
+cv::Mat breadBox(cv::Mat image)
 {
     Mat bread_template = imread("/Users/franc/Downloads/bread_template.jpg");
+
     Mat mask2, mask3, bread_image, bread_image2, boxed;
 
     // Go into HSV colorplane
@@ -46,7 +48,6 @@ cv::Mat breadBox(cv::Mat& image)
     cvtColor(image, hsv_image, COLOR_BGR2HSV);
     std::vector<Mat> hsv_channels;
     split(hsv_image, hsv_channels);
-
     Mat hue_channel = hsv_channels[0];
     Mat sat_channel = hsv_channels[1];
     Mat value_channel = hsv_channels[2];
@@ -72,6 +73,6 @@ cv::Mat breadBox(cv::Mat& image)
     Point end = Point((minLoc).x + bread_template.cols, (minLoc).y + bread_template.rows);
     rectangle(boxed, minLoc, end, Scalar(0, 0, 255));
     imshow("Rec", boxed);
-
+    waitKey(0);
     return boxed;
 }

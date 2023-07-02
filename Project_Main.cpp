@@ -12,14 +12,14 @@ int main(int argc, char** argv) {
     // check argc
     vector<cv::Mat> images;
 
-    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray7/*.jpg");
+    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray1/*.jpg");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
 
 
-    Mat bread_template = imread("/Users/franc/Downloads/bread_template.jpg");
-    if (bread_template.data == NULL)
-        throw invalid_argument("Data does not exist");
+    //Mat bread_template = imread("/Users/franc/Downloads/bread_template.jpg");
+   // if (bread_template.data == NULL)
+     //   throw invalid_argument("Data does not exist");
 
     for (auto& str : filenames) {
         Mat img = imread(str);
@@ -43,8 +43,14 @@ int main(int argc, char** argv) {
             circle(mask, center, radius, Scalar(255), -1);
         }
         // Code for the inverse mask
-       
-        cout << minVal << endl;
+        Mat bread, inverse_mask;
+        bitwise_not(mask, inverse_mask);
+        image.copyTo(bread, inverse_mask);
+        imshow("img", bread);
+
+        vector<Mat> p, p1, p2;
+        p2.push_back(bread);
+        breadFinder(p2, p, p1);
        // Mat gradient;
         //Sobel(bread_image, gradient, CV_8U, 2, 2);
        // imshow("Gradient", gradient);
