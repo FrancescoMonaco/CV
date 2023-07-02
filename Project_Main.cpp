@@ -17,9 +17,9 @@ int main(int argc, char** argv) {
     glob(folder, filenames, false);
 
 
-    //Mat bread_template = imread("/Users/franc/Downloads/bread_template.jpg");
-   // if (bread_template.data == NULL)
-     //   throw invalid_argument("Data does not exist");
+    Mat bread_template = imread("/Users/franc/Downloads/pan_br.jpeg");
+    if (bread_template.data == NULL)
+        throw invalid_argument("Data does not exist");
 
     for (auto& str : filenames) {
         Mat img = imread(str);
@@ -43,14 +43,62 @@ int main(int argc, char** argv) {
             circle(mask, center, radius, Scalar(255), -1);
         }
         // Code for the inverse mask
-        Mat bread, inverse_mask;
+        Mat inverse_mask, mask2, mask3, bread_image2;
         bitwise_not(mask, inverse_mask);
-        image.copyTo(bread, inverse_mask);
-        imshow("img", bread);
+        Mat result;
+        image.copyTo(result, inverse_mask);
 
-        vector<Mat> p, p1, p2;
-        p2.push_back(bread);
-        breadFinder(p2, p, p1);
+        Mat hsv_image;
+        cvtColor(result, hsv_image, COLOR_BGR2HSV);
+        std::vector<Mat> hsv_channels;
+        split(hsv_image, hsv_channels);
+
+        Mat hue_channel = hsv_channels[0];
+        Mat sat_channel = hsv_channels[1];
+        Mat value_channel = hsv_channels[2];
+        inRange(sat_channel, 40, 200, mask3); // only for tray 5
+        inRange(hue_channel, 5, 95, mask2); //threshold for bread hue
+        Mat bread_image, matchOut;
+        bitwise_and(result, result, bread_image, mask2);
+        bitwise_and(bread_image, bread_image, bread_image2, mask3);
+        imshow("Hue", bread_image2);
+
+
+        
+        matchTemplate(bread_image2, bread_template, matchOut, TM_SQDIFF);
+
+        //imshow("Output", matchOut);
+        double* minVal = {}, * maxVal = {};
+        Point minLoc, maxLoc;
+
+        minMaxLoc(matchOut, minVal, maxVal, &minLoc, &maxLoc);
+        //
+        int offsetX = bread_template.cols / 2;  // Half the width of the template
+        int offsetY = bread_template.rows / 2;  // Half the height of the template
+        Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
+
+        // Define the top-left and bottom-right corners of the rectangle
+        Point topLeft(center.x - offsetX, center.y - offsetY);
+        Point bottomRight(center.x + offsetX, center.y + offsetY);
+
+        rectangle(result, topLeft, bottomRight, Scalar(0,0,255));
+        imshow("Rec", result);
+
+        // Create a mask image with the same size as the input image
+        Mat zero_mask = Mat::zeros(image.size(), CV_8UC1);
+
+        // Set the region outside the rectangle to black in the mask
+        rectangle(zero_mask, Rect(topLeft, bottomRight), Scalar(255), FILLED);
+
+        // Apply the mask to the original image
+        Mat alone, alones;
+        Rect ext(topLeft, bottomRight);
+        alone = image(ext);
+        cvtColor(alone, alone, COLOR_BGR2GRAY);
+        medianBlur(alone, alone, 7);
+        threshold(alone, alones, 50, 250, THRESH_BINARY_INV | THRESH_TRIANGLE);
+        imshow("Seg", alones);
+  
        // Mat gradient;
         //Sobel(bread_image, gradient, CV_8U, 2, 2);
        // imshow("Gradient", gradient);
@@ -63,7 +111,7 @@ int main(int argc, char** argv) {
         //Canny(img, edges, 10, 100, 3);
         //imshow("Canny image", edges);
        // kmeans(bread_image);
-
+       
         /*
         cvtColor(result, result, COLOR_BGR2HLS);
         Mat chan[3];
