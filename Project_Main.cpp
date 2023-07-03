@@ -6,8 +6,9 @@
 using namespace std;
 using namespace cv;
 
-void watershed(Mat in);
-void kmeans(Mat& img);
+void breadFinder(Mat image);
+bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
+
 int main(int argc, char** argv) {
     // check argc
     vector<cv::Mat> images;
@@ -15,11 +16,6 @@ int main(int argc, char** argv) {
     string folder("/Users/franc/Downloads/Food_leftover_dataset/tray1/*.jpg");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
-
-
-    Mat bread_template = imread("/Users/franc/Downloads/pan_br.jpeg");
-    if (bread_template.data == NULL)
-        throw invalid_argument("Data does not exist");
 
     for (auto& str : filenames) {
         Mat img = imread(str);
@@ -47,57 +43,8 @@ int main(int argc, char** argv) {
         bitwise_not(mask, inverse_mask);
         Mat result;
         image.copyTo(result, inverse_mask);
-
-        Mat hsv_image;
-        cvtColor(result, hsv_image, COLOR_BGR2HSV);
-        std::vector<Mat> hsv_channels;
-        split(hsv_image, hsv_channels);
-
-        Mat hue_channel = hsv_channels[0];
-        Mat sat_channel = hsv_channels[1];
-        Mat value_channel = hsv_channels[2];
-        inRange(sat_channel, 40, 200, mask3); // only for tray 5
-        inRange(hue_channel, 5, 95, mask2); //threshold for bread hue
-        Mat bread_image, matchOut;
-        bitwise_and(result, result, bread_image, mask2);
-        bitwise_and(bread_image, bread_image, bread_image2, mask3);
-        imshow("Hue", bread_image2);
-
-
-        
-        matchTemplate(bread_image2, bread_template, matchOut, TM_SQDIFF);
-
-        //imshow("Output", matchOut);
-        double* minVal = {}, * maxVal = {};
-        Point minLoc, maxLoc;
-
-        minMaxLoc(matchOut, minVal, maxVal, &minLoc, &maxLoc);
-        //
-        int offsetX = bread_template.cols / 2;  // Half the width of the template
-        int offsetY = bread_template.rows / 2;  // Half the height of the template
-        Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
-
-        // Define the top-left and bottom-right corners of the rectangle
-        Point topLeft(center.x - offsetX, center.y - offsetY);
-        Point bottomRight(center.x + offsetX, center.y + offsetY);
-
-        rectangle(result, topLeft, bottomRight, Scalar(0,0,255));
-        imshow("Rec", result);
-
-        // Create a mask image with the same size as the input image
-        Mat zero_mask = Mat::zeros(image.size(), CV_8UC1);
-
-        // Set the region outside the rectangle to black in the mask
-        rectangle(zero_mask, Rect(topLeft, bottomRight), Scalar(255), FILLED);
-
-        // Apply the mask to the original image
-        Mat alone, alones;
-        Rect ext(topLeft, bottomRight);
-        alone = image(ext);
-        cvtColor(alone, alone, COLOR_BGR2GRAY);
-        medianBlur(alone, alone, 7);
-        threshold(alone, alones, 50, 250, THRESH_BINARY_INV | THRESH_TRIANGLE);
-        imshow("Seg", alones);
+        breadFinder(result);
+       
   
        // Mat gradient;
         //Sobel(bread_image, gradient, CV_8U, 2, 2);
@@ -133,140 +80,131 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void watershed(Mat src) {
-    int binThresh = 160;
-    float distThresh = 0.88;
-    // Mask the black
-    Mat mask;
-    inRange(src, Scalar(255, 255, 255), Scalar(255, 255, 255), mask);
-    src.setTo(Scalar(0, 0, 0), mask);
+void breadFinder(Mat result) {
+    Mat hsv_image, mask2, mask3, bread_image2;
 
-    // Blur the image
-    Mat sharp;
-    Mat imgResult;
-    medianBlur(src, sharp, 9);
-    medianBlur(sharp, imgResult, 5);
-    // convert back to 8bits gray scale
-    imgResult.convertTo(imgResult, CV_8UC3);
+    Mat bread_template = imread("/Users/franc/Downloads/pan_br.jpg");
+    Mat crumbs_template = imread("/Users/franc/Downloads/pan_left.jpg");
 
-    //imshow("Blurred", imgResult);
+    if (bread_template.data == NULL || crumbs_template.data == NULL)
+        throw invalid_argument("Data does not exist");
 
-    // Create binary image from source image
-    Mat bw;
-    cvtColor(imgResult, bw, COLOR_BGR2GRAY);
-    threshold(bw, bw, binThresh, 255, THRESH_OTSU);
-    imshow("Binary Image", bw);
+    cvtColor(result, hsv_image, COLOR_BGR2HSV);
+    std::vector<Mat> hsv_channels;
+    split(hsv_image, hsv_channels);
+    Mat hue_channel = hsv_channels[0];
+    Mat sat_channel = hsv_channels[1];
+    Mat value_channel = hsv_channels[2];
 
-    // Perform the distance transform algorithm
-    Mat dist;
-    distanceTransform(bw, dist, DIST_L2, 3);
-    normalize(dist, dist, 0, 1.0, NORM_MINMAX);
+    inRange(sat_channel, 40, 170, mask3); // only for tray 5
+    inRange(hue_channel, 5, 95, mask2); //threshold for bread hue
+    Mat bread_image;
+    bitwise_and(result, result, bread_image, mask2);
+    bitwise_and(bread_image, bread_image, bread_image2, mask3);
+    
+    bool isBread = apply_ORB(bread_template, bread_image2);
+    cout << "Bread matches: " << isBread << endl;
+    if (isBread) {
+        // BREAD
 
-    //imshow("Distance Transform Image", dist);
+            imshow("Hue", bread_image2);
 
-    // Threshold to obtain the peaks
-    // This will be the markers for the foreground objects
-    threshold(dist, dist, distThresh, 1.0, THRESH_BINARY);
-    // Dilate a bit the dist image
-    Mat kernel1 = Mat::ones(3, 3, CV_8U);
-    dilate(dist, dist, kernel1, Point(-1, 1), 1);
-    //imshow("Peaks", dist);
-    // Create the CV_8U version of the distance image
-    // It is needed for findContours()
-    Mat dist_8u;
-    dist.convertTo(dist_8u, CV_8U);
-    // Find total markers
-    vector<vector<Point> > contours;
-    findContours(dist_8u, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-    // Create the marker image for the watershed algorithm
-    Mat markers = Mat::zeros(dist.size(), CV_32S);
-    // Draw the foreground markers
-    for (size_t i = 0; i < contours.size(); i++)
-    {
-        drawContours(markers, contours, static_cast<int>(i), Scalar(static_cast<int>(i) + 1), -1);
+
+            Mat matchOut;
+            matchTemplate(result, bread_template, matchOut, TM_SQDIFF);
+
+            double* minVal = {}, * maxVal = {};
+            Point minLoc, maxLoc;
+
+            minMaxLoc(matchOut, minVal, maxVal, &minLoc, &maxLoc);
+            //
+            int offsetX = bread_template.cols / 2;  // Half the width of the template
+            int offsetY = bread_template.rows / 2;  // Half the height of the template
+            Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
+
+            // Define the top-left and bottom-right corners of the rectangle
+            Point topLeft(center.x - offsetX, center.y - offsetY);
+            Point bottomRight(center.x + offsetX, center.y + offsetY);
+
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
+            waitKey(0);
     }
-    // Draw the background marker
-    circle(markers, Point(5, 5), 3, Scalar(255), -1);
-    Mat markers8u;
-    markers.convertTo(markers8u, CV_8U, 10);
-    //imshow("Markers", markers8u);
-    // Perform the watershed algorithm
-    watershed(imgResult, markers);
-    Mat mark;
-    markers.convertTo(mark, CV_8U);
-    bitwise_not(mark, mark);
+    else {
+        bool isCrumb = apply_ORB(crumbs_template, result);
+        if (!isCrumb) return; // No bread on the tray
+        else {
+            Mat matchOut;
+            matchTemplate(result, crumbs_template, matchOut, TM_SQDIFF);
 
-    // Generate random colors
-    vector<Vec3b> colors;
-    for (size_t i = 0; i < contours.size(); i++)
-    {
-        int b = theRNG().uniform(0, 256);
-        int g = theRNG().uniform(0, 256);
-        int r = theRNG().uniform(0, 256);
-        colors.push_back(Vec3b((uchar)b, (uchar)g, (uchar)r));
-    }
-    // Create the result image
-    Mat dst = Mat::zeros(markers.size(), CV_8UC3);
-    // Fill labeled objects with random colors
-    for (int i = 0; i < markers.rows; i++)
-    {
-        for (int j = 0; j < markers.cols; j++)
-        {
-            int index = markers.at<int>(i, j);
-            if (index > 0 && index <= static_cast<int>(contours.size()))
-            {
-                dst.at<Vec3b>(i, j) = colors[index - 1];
-            }
+            double* minVal = {}, * maxVal = {};
+            Point minLoc, maxLoc;
+
+            minMaxLoc(matchOut, minVal, maxVal, &minLoc, &maxLoc);
+            // Create the rectangle
+            int offsetX = crumbs_template.cols / 2;  // Half the width of the template
+            int offsetY = crumbs_template.rows / 2;  // Half the height of the template
+            Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
+
+            // Define the top-left and bottom-right corners of the rectangle
+            Point topLeft(center.x - offsetX, center.y - offsetY);
+            Point bottomRight(center.x + offsetX, center.y + offsetY);
+
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
+            waitKey(0);
+
         }
     }
-    // Visualize the final image
-    namedWindow("Final Result", WINDOW_GUI_NORMAL);
-    imshow("Final Result", dst);
+
+   
 }
 
-void kmeans(cv::Mat& img)
+
+bool apply_ORB(cv::Mat& in1, cv::Mat& in2)
 {
-    // Blur the image
-    Mat temp, dst, data;
-    medianBlur(img, temp, 9);
-    GaussianBlur(temp, img, Size(3, 3), 3);
+    // Variables initialization
+    int tresh = 4;
+    double ratio = 0.75;
+    Mat out, out_match;
+    Ptr<ORB> orb = ORB::create();
+    vector<KeyPoint> vec, vec2;
 
-    /*
-    Vec3b colorRef(20, 30, 170); // yellows
-    Vec3b buf(155, 155, 190);
+    // Find the keypoints in the two images
+    (*orb).detect(in1, vec);
+    (*orb).detect(in2, vec2);
 
-    // Mask the colors
-    temp, dst = Mat::zeros(img.rows, img.cols, CV_8U);
-    inRange(img, colorRef, buf, temp);
-    cvtColor(temp, temp, COLOR_GRAY2BGR);
-    bitwise_and(img, temp, dst);
+    // Show them
+    drawKeypoints(in1, vec, out);
+    //namedWindow("ORB Keypoints", WINDOW_GUI_NORMAL);
+    //imshow("ORB Keypoints", out);
 
-    //imshow("masked", temp);
-    dst.convertTo(data, CV_32F);
-    data = data.reshape(1, data.total());
-    */
+    Mat descriptors1, descriptors2;
+    orb->compute(in1, vec, descriptors1);
+    orb->compute(in2, vec2, descriptors2);
 
-    img.convertTo(data, CV_32F);
-    data = data.reshape(1, data.total());
-    // do kmeans
-    Mat labels, centers;
-    kmeans(data, 2, labels, TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 10, 1.0), 3,
-        KMEANS_PP_CENTERS, centers);
+    // Create a brute force matcher and match the features
+    Ptr<BFMatcher> matcher = BFMatcher::create();
+    vector<vector<DMatch>> matches;
+    vector<vector<DMatch>> pruned_matches;
 
-    // reshape both to a single row of Vec3f pixels:
-    centers = centers.reshape(3, centers.rows);
-    data = data.reshape(3, data.rows);
+    matcher->knnMatch(descriptors1, descriptors2, matches, 2);
 
-    // replace pixel values with their label:
-    Vec3f* p = data.ptr<Vec3f>();
-    for (size_t i = 0; i < data.rows; i++) {
-        int center_id = labels.at<int>(i);
-        p[i] = centers.at<Vec3f>(center_id);
+    for (int i = 0; i < matches.size(); i++) {
+        // check the similar matches
+        if (matches[i][0].distance < ratio * matches[i][1].distance) {
+            pruned_matches.push_back(matches[i]);
+        }
     }
 
-    // back to 2d, and uchar:
-    img = data.reshape(3, img.rows);
-    img.convertTo(img, CV_8U);
-    namedWindow("Clustering", WINDOW_GUI_NORMAL);
-    imshow("Clustering", img);
+
+    // show the matches
+    drawMatches(in1, vec, in2, vec2, pruned_matches, out_match);
+    namedWindow("ORB Matches", WINDOW_GUI_NORMAL);
+    imshow("ORB Matches", out_match);
+
+    // print the result
+    if (pruned_matches.size() > tresh)
+        return true;
+    return false;
 }

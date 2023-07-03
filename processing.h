@@ -7,6 +7,5 @@
 #include <iostream>
 
 
-void apply_ORB(cv::Mat& templ, cv::Mat& image, bool drawBox=true);
 
 #endif
