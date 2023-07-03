@@ -6,14 +6,17 @@
 using namespace std;
 using namespace cv;
 
-void breadFinder(Mat image);
+const int bigRadius = 295;
+const int smallRadius = 287;
+
+void breadFinder(Mat image, int radius);
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
 
 int main(int argc, char** argv) {
     // check argc
     vector<cv::Mat> images;
 
-    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray1/*.jpg");
+    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray5/*.jpg");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
 
@@ -29,6 +32,7 @@ int main(int argc, char** argv) {
         Mat grayscale;
         Mat mask = Mat::zeros(image.size(), CV_8UC1); // Mask initialization
         cvtColor(image, grayscale, cv::COLOR_BGR2GRAY);
+        int rad;
         HoughCircles(grayscale, circles, HOUGH_GRADIENT, 1, grayscale.rows/3, 180, 60, 230, 350);
         for (size_t i = 0; i < circles.size(); i++)
         {
@@ -37,13 +41,15 @@ int main(int argc, char** argv) {
             // draw the outline
             //circle(image, center, radius, Scalar(0, 30, 205), 2, LINE_AA);
             circle(mask, center, radius, Scalar(255), -1);
+            cout << radius << endl;
+            if (i == 0) rad = radius;
         }
         // Code for the inverse mask
         Mat inverse_mask, mask2, mask3, bread_image2;
         bitwise_not(mask, inverse_mask);
         Mat result;
         image.copyTo(result, inverse_mask);
-        breadFinder(result);
+        breadFinder(result, rad);
        
   
        // Mat gradient;
@@ -80,10 +86,10 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void breadFinder(Mat result) {
+void breadFinder(Mat result, int radius) {
     Mat hsv_image, mask2, mask3, bread_image2;
 
-    Mat bread_template = imread("/Users/franc/Downloads/pan_br.jpg");
+    Mat bread_template = imread("/Users/franc/Downloads/pan_br.jpeg");
     Mat crumbs_template = imread("/Users/franc/Downloads/pan_left.jpg");
 
     if (bread_template.data == NULL || crumbs_template.data == NULL)
@@ -96,28 +102,47 @@ void breadFinder(Mat result) {
     Mat sat_channel = hsv_channels[1];
     Mat value_channel = hsv_channels[2];
 
-    inRange(sat_channel, 40, 170, mask3); // only for tray 5
+    inRange(sat_channel, 40, 200, mask3); // only for tray 5
     inRange(hue_channel, 5, 95, mask2); //threshold for bread hue
     Mat bread_image;
     bitwise_and(result, result, bread_image, mask2);
     bitwise_and(bread_image, bread_image, bread_image2, mask3);
     
-    bool isBread = apply_ORB(bread_template, bread_image2);
-    cout << "Bread matches: " << isBread << endl;
-    if (isBread) {
-        // BREAD
+    // Initialization for TM values
+    double minVal, maxVal;
+    Point minLoc, maxLoc;
+    double minVal2, maxVal2;
+    Point minLoc2, maxLoc2;
+
+    // Bread matching
+    if (1) { // the if is used to easily delete the local variables
 
             imshow("Hue", bread_image2);
 
 
             Mat matchOut;
-            matchTemplate(result, bread_template, matchOut, TM_SQDIFF);
+            matchTemplate(bread_image2, bread_template, matchOut, TM_SQDIFF_NORMED);
 
-            double* minVal = {}, * maxVal = {};
-            Point minLoc, maxLoc;
+            minMaxLoc(matchOut, &minVal, &maxVal, &minLoc, &maxLoc);
 
-            minMaxLoc(matchOut, minVal, maxVal, &minLoc, &maxLoc);
-            //
+            cout << "Bread " << minVal << " ";
+
+    }
+    if(1) {
+        //bool isCrumb = apply_ORB(crumbs_template, result);
+        if (false) return; // No bread on the tray
+        else {
+            Mat matchOut2;
+            matchTemplate(bread_image, crumbs_template, matchOut2, TM_SQDIFF_NORMED);
+
+
+            minMaxLoc(matchOut2, &minVal2, &maxVal2, &minLoc2, &maxLoc2);
+            cout << "crumbs " << minVal2 << endl;
+
+        }
+
+        // Choose window size based on the radius of the plates
+        if (radius <= smallRadius) {
             int offsetX = bread_template.cols / 2;  // Half the width of the template
             int offsetY = bread_template.rows / 2;  // Half the height of the template
             Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
@@ -125,36 +150,33 @@ void breadFinder(Mat result) {
             // Define the top-left and bottom-right corners of the rectangle
             Point topLeft(center.x - offsetX, center.y - offsetY);
             Point bottomRight(center.x + offsetX, center.y + offsetY);
-
             rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
             imshow("Rec", result);
-            waitKey(0);
-    }
-    else {
-        bool isCrumb = apply_ORB(crumbs_template, result);
-        if (!isCrumb) return; // No bread on the tray
-        else {
-            Mat matchOut;
-            matchTemplate(result, crumbs_template, matchOut, TM_SQDIFF);
-
-            double* minVal = {}, * maxVal = {};
-            Point minLoc, maxLoc;
-
-            minMaxLoc(matchOut, minVal, maxVal, &minLoc, &maxLoc);
-            // Create the rectangle
-            int offsetX = crumbs_template.cols / 2;  // Half the width of the template
-            int offsetY = crumbs_template.rows / 2;  // Half the height of the template
+        }
+        else if (radius > bigRadius) {
+            int offsetX = bread_template.cols / 2;  // Half the width of the template
+            int offsetY = bread_template.rows / 2;  // Half the height of the template
             Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
 
             // Define the top-left and bottom-right corners of the rectangle
-            Point topLeft(center.x - offsetX, center.y - offsetY);
-            Point bottomRight(center.x + offsetX, center.y + offsetY);
-
+            Point topLeft(center.x - 1.5*offsetX, center.y - 1.5*offsetY);
+            Point bottomRight(center.x + 1.5*offsetX, center.y + 1.5*offsetY);
             rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
             imshow("Rec", result);
-            waitKey(0);
-
         }
+        else {
+            int offsetX = bread_template.cols / 2;  // Half the width of the template
+            int offsetY = bread_template.rows / 2;  // Half the height of the template
+            Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
+
+            // Define the top-left and bottom-right corners of the rectangle
+            Point topLeft(center.x - 0.4*offsetX, center.y - 1.5 * offsetY);
+            Point bottomRight(center.x + 1.1*offsetX, center.y + 1.2 * offsetY);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
+        }
+
+        waitKey(0);
     }
 
    
