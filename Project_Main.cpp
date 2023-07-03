@@ -8,8 +8,9 @@ using namespace cv;
 
 const int bigRadius = 295;
 const int smallRadius = 287;
+double lowerBound = 0.1;
 
-void breadFinder(Mat image, int radius);
+void breadFinder(Mat& image, int radius);
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
 
 int main(int argc, char** argv) {
@@ -51,33 +52,7 @@ int main(int argc, char** argv) {
         image.copyTo(result, inverse_mask);
         breadFinder(result, rad);
        
-  
-       // Mat gradient;
-        //Sobel(bread_image, gradient, CV_8U, 2, 2);
-       // imshow("Gradient", gradient);
-       // 
-       // watershed(gradient, bread_image);
 
-       // Mat edges, img;
-      //  bilateralFilter(bread_image, img, 5, 150, 150);
-        //imshow("Bread Image", img);
-        //Canny(img, edges, 10, 100, 3);
-        //imshow("Canny image", edges);
-       // kmeans(bread_image);
-       
-        /*
-        cvtColor(result, result, COLOR_BGR2HLS);
-        Mat chan[3];
-        //watershed(result);
-        split(result, chan);
-        //imshow("Green", chan[1]);
-        imshow("Red", chan[2]);
-        //watershed(chan[2]);
-        //imshow("Blue", chan[0]);
-        threshold(chan[2], chan[2], 100, 235, THRESH_BINARY | THRESH_OTSU);
-        imshow("Segmented Image", chan[2]);
-        //imshow("gray", grayscale);
-        */
         waitKey(0);
     }
 
@@ -86,15 +61,17 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void breadFinder(Mat result, int radius) {
+void breadFinder(Mat& result, int radius) {
     Mat hsv_image, mask2, mask3, bread_image2;
 
+    // Load the templates and check for their existence
     Mat bread_template = imread("/Users/franc/Downloads/pan_br.jpeg");
     Mat crumbs_template = imread("/Users/franc/Downloads/pan_left.jpg");
 
     if (bread_template.data == NULL || crumbs_template.data == NULL)
         throw invalid_argument("Data does not exist");
 
+    // Convert to HSV
     cvtColor(result, hsv_image, COLOR_BGR2HSV);
     std::vector<Mat> hsv_channels;
     split(hsv_image, hsv_channels);
@@ -102,6 +79,8 @@ void breadFinder(Mat result, int radius) {
     Mat sat_channel = hsv_channels[1];
     Mat value_channel = hsv_channels[2];
 
+    // Mask the colors that are not near the browns
+    // this removes the tag, the plastic cup and the yogurt
     inRange(sat_channel, 40, 200, mask3); // only for tray 5
     inRange(hue_channel, 5, 95, mask2); //threshold for bread hue
     Mat bread_image;
@@ -113,6 +92,8 @@ void breadFinder(Mat result, int radius) {
     Point minLoc, maxLoc;
     double minVal2, maxVal2;
     Point minLoc2, maxLoc2;
+    Mat mask, temp1, temp2;
+    Rect rec;
 
     // Bread matching
     if (1) { // the if is used to easily delete the local variables
@@ -129,9 +110,7 @@ void breadFinder(Mat result, int radius) {
 
     }
     if(1) {
-        //bool isCrumb = apply_ORB(crumbs_template, result);
-        if (false) return; // No bread on the tray
-        else {
+
             Mat matchOut2;
             matchTemplate(bread_image, crumbs_template, matchOut2, TM_SQDIFF_NORMED);
 
@@ -141,8 +120,21 @@ void breadFinder(Mat result, int radius) {
 
         }
 
+    // Create the bounding box
+     if (minVal2 < lowerBound) { 
+            int offsetX = bread_template.cols / 2;  // Half the width of the template
+            int offsetY = bread_template.rows / 2;  // Half the height of the template
+            Point center(minLoc2.x + offsetX, minLoc2.y + offsetY);  // Calculate the center position
+
+            // Define the top-left and bottom-right corners of the rectangle
+            Point topLeft(center.x - offsetX, center.y - offsetY);
+            Point bottomRight(center.x + offsetX, center.y + offsetY);
+            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            //imshow("Rec", result);
+            rec = Rect(topLeft, bottomRight);
+        }
         // Choose window size based on the radius of the plates
-        if (radius <= smallRadius) {
+     else if (radius <= smallRadius) {
             int offsetX = bread_template.cols / 2;  // Half the width of the template
             int offsetY = bread_template.rows / 2;  // Half the height of the template
             Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
@@ -150,36 +142,64 @@ void breadFinder(Mat result, int radius) {
             // Define the top-left and bottom-right corners of the rectangle
             Point topLeft(center.x - offsetX, center.y - offsetY);
             Point bottomRight(center.x + offsetX, center.y + offsetY);
-            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            imshow("Rec", result);
+            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            //imshow("Rec", result);
+            rec = Rect(topLeft, bottomRight);
         }
-        else if (radius > bigRadius) {
+     else if (radius > bigRadius) {
             int offsetX = bread_template.cols / 2;  // Half the width of the template
             int offsetY = bread_template.rows / 2;  // Half the height of the template
             Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
 
             // Define the top-left and bottom-right corners of the rectangle
+            // as a bigger box due to perspective
             Point topLeft(center.x - 1.5*offsetX, center.y - 1.5*offsetY);
             Point bottomRight(center.x + 1.5*offsetX, center.y + 1.5*offsetY);
-            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            imshow("Rec", result);
+            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            //imshow("Rec", result);
+            rec = Rect(topLeft, bottomRight);
         }
-        else {
+     else {
             int offsetX = bread_template.cols / 2;  // Half the width of the template
             int offsetY = bread_template.rows / 2;  // Half the height of the template
             Point center(minLoc.x + offsetX, minLoc.y + offsetY);  // Calculate the center position
 
             // Define the top-left and bottom-right corners of the rectangle
+            // as a slightly bigger box due to perspective
             Point topLeft(center.x - 0.4*offsetX, center.y - 1.5 * offsetY);
             Point bottomRight(center.x + 1.1*offsetX, center.y + 1.2 * offsetY);
-            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            imshow("Rec", result);
+            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            //imshow("Rec", result);
+            rec = Rect(topLeft, bottomRight);
         }
 
-        waitKey(0);
-    }
+    
 
-   
+    mask = Mat::ones(result.size(), CV_32FC1);
+    //mask(rec) = 0;
+    Mat roiMask = mask(rec);
+    roiMask = 0;
+    mask.at<float>(minLoc) = 2;
+
+    watershed(result, mask);
+    vector<Vec3b> colors;
+    colors.push_back(Vec3b(0, 0, 255));
+    colors.push_back(Vec3b(0, 255, 255));
+    colors.push_back(Vec3b(255, 255, 255));
+
+    Mat dst = Mat::zeros(mask.size(), CV_8UC3);
+    result.copyTo(dst);
+    for (int i = 0; i < mask.rows; i++)
+    {
+        for (int j = 0; j < mask.cols; j++)
+        {
+            int index = mask.at<int>(i, j);
+                dst.at<Vec3b>(i, j) = colors[index - 1];
+      
+        }
+    }
+    imshow("Result", dst);
+    waitKey(0);
 }
 
 
