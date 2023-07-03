@@ -4,11 +4,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
 #include "opencv2/calib3d.hpp"
+#include <iostream>
 
 
-/**
-* @param vec vector of images
-*/
-void calibrate(std::vector<cv::Mat> images);
 
 #endif
