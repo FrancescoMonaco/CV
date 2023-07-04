@@ -8,7 +8,7 @@ using namespace cv;
 
 const int bigRadius = 295;
 const int smallRadius = 287;
-double lowerBound = 0.1;
+double lowerBound = 0.11;
 
 void breadFinder(Mat& image, int radius);
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
     // check argc
     vector<cv::Mat> images;
 
-    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray5/*.jpg");
+    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray4/*.jpg");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
 
@@ -53,7 +53,6 @@ int main(int argc, char** argv) {
         breadFinder(result, rad);
        
 
-        waitKey(0);
     }
 
     
@@ -66,7 +65,7 @@ void breadFinder(Mat& result, int radius) {
 
     // Load the templates and check for their existence
     Mat bread_template = imread("/Users/franc/Downloads/pan_br.jpeg");
-    Mat crumbs_template = imread("/Users/franc/Downloads/pan_left.jpg");
+    Mat crumbs_template = imread("/Users/franc/Downloads/crumbs.jpg");
 
     if (bread_template.data == NULL || crumbs_template.data == NULL)
         throw invalid_argument("Data does not exist");
@@ -92,7 +91,7 @@ void breadFinder(Mat& result, int radius) {
     Point minLoc, maxLoc;
     double minVal2, maxVal2;
     Point minLoc2, maxLoc2;
-    Mat mask, temp1, temp2;
+    Mat mask, temp1, temp2, br;
     Rect rec;
 
     // Bread matching
@@ -121,7 +120,7 @@ void breadFinder(Mat& result, int radius) {
         }
 
     // Create the bounding box
-     if (minVal2 < lowerBound) { 
+     if (minVal2 < lowerBound && radius < bigRadius) { 
             int offsetX = bread_template.cols / 2;  // Half the width of the template
             int offsetY = bread_template.rows / 2;  // Half the height of the template
             Point center(minLoc2.x + offsetX, minLoc2.y + offsetY);  // Calculate the center position
@@ -129,8 +128,8 @@ void breadFinder(Mat& result, int radius) {
             // Define the top-left and bottom-right corners of the rectangle
             Point topLeft(center.x - offsetX, center.y - offsetY);
             Point bottomRight(center.x + offsetX, center.y + offsetY);
-            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            //imshow("Rec", result);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
             rec = Rect(topLeft, bottomRight);
         }
         // Choose window size based on the radius of the plates
@@ -142,8 +141,8 @@ void breadFinder(Mat& result, int radius) {
             // Define the top-left and bottom-right corners of the rectangle
             Point topLeft(center.x - offsetX, center.y - offsetY);
             Point bottomRight(center.x + offsetX, center.y + offsetY);
-            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            //imshow("Rec", result);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
             rec = Rect(topLeft, bottomRight);
         }
      else if (radius > bigRadius) {
@@ -155,8 +154,8 @@ void breadFinder(Mat& result, int radius) {
             // as a bigger box due to perspective
             Point topLeft(center.x - 1.5*offsetX, center.y - 1.5*offsetY);
             Point bottomRight(center.x + 1.5*offsetX, center.y + 1.5*offsetY);
-            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            //imshow("Rec", result);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
             rec = Rect(topLeft, bottomRight);
         }
      else {
@@ -166,39 +165,40 @@ void breadFinder(Mat& result, int radius) {
 
             // Define the top-left and bottom-right corners of the rectangle
             // as a slightly bigger box due to perspective
-            Point topLeft(center.x - 0.4*offsetX, center.y - 1.5 * offsetY);
+            Point topLeft(center.x - 0.4*offsetX, center.y - 1.2 * offsetY);
             Point bottomRight(center.x + 1.1*offsetX, center.y + 1.2 * offsetY);
-            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            //imshow("Rec", result);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
             rec = Rect(topLeft, bottomRight);
         }
 
-    
+    //mask = Mat::ones(result.size(), CV_32S);
+    ////mask(rec) = 0;
+    //Mat roiMask = mask(rec);
+    //roiMask = 0;
+    //mask.at<float>(minLoc) = 2;
 
-    mask = Mat::ones(result.size(), CV_32FC1);
-    //mask(rec) = 0;
-    Mat roiMask = mask(rec);
-    roiMask = 0;
-    mask.at<float>(minLoc) = 2;
-
-    watershed(result, mask);
-    vector<Vec3b> colors;
-    colors.push_back(Vec3b(0, 0, 255));
-    colors.push_back(Vec3b(0, 255, 255));
-    colors.push_back(Vec3b(255, 255, 255));
-
-    Mat dst = Mat::zeros(mask.size(), CV_8UC3);
-    result.copyTo(dst);
-    for (int i = 0; i < mask.rows; i++)
-    {
-        for (int j = 0; j < mask.cols; j++)
-        {
-            int index = mask.at<int>(i, j);
-                dst.at<Vec3b>(i, j) = colors[index - 1];
-      
-        }
-    }
-    imshow("Result", dst);
+    //watershed(result, mask);
+    //vector<Vec3b> colors;
+    //colors.push_back(Vec3b(0, 0, 255));
+    //colors.push_back(Vec3b(0, 255, 255));
+    //colors.push_back(Vec3b(255, 255, 255));
+    //Mat f_mask;
+    //Mat dst = Mat::zeros(mask.size(), CV_8UC3);
+    //mask.convertTo(f_mask, CV_8U);
+    //bitwise_not(f_mask, f_mask);
+    //result.copyTo(dst);
+    //for (int i = 0; i < mask.rows; i++)
+    //{
+    //    for (int j = 0; j < mask.cols; j++)
+    //    {
+    //        int index = f_mask.at<int>(i, j);
+    //        if (index > 0 )
+    //            dst.at<Vec3b>(i, j) = colors[index];
+    //  
+    //    }
+    //}
+    //imshow("Result", dst);
     waitKey(0);
 }
 
