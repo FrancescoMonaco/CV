@@ -1,40 +1,40 @@
 ﻿  Project_Main.cpp
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(155,60): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(164,60): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(155,36): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(164,36): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(156,64): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(165,64): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(156,40): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(165,40): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(168,60): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(177,60): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(168,36): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(177,36): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(169,64): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(178,64): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(169,40): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(178,40): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int

@@ -3,6 +3,10 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <direct.h>
+#include <cstdlib>
+#include <fstream>
+
 using namespace std;
 using namespace cv;
 
@@ -10,7 +14,7 @@ const int bigRadius = 295;
 const int smallRadius = 287;
 double lowerBound = 0.11;
 
-void breadFinder(Mat& image, int radius);
+Rect breadFinder(Mat& image, int radius, bool* found);
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
 
 int main(int argc, char** argv) {
@@ -18,8 +22,15 @@ int main(int argc, char** argv) {
     vector<cv::Mat> images;
 
     string folder("/Users/franc/Downloads/Food_leftover_dataset/tray4/*.jpg");
+    string results("/Users/franc/Downloads/Food_leftover_dataset/tray4/preds");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
+
+    // Create the directory where the results will be saved
+    if (_mkdir(results.c_str()) == -1) {
+        perror("Error creating directory");
+        exit(EXIT_FAILURE);
+    }
 
     for (auto& str : filenames) {
         Mat img = imread(str);
@@ -45,12 +56,28 @@ int main(int argc, char** argv) {
             cout << radius << endl;
             if (i == 0) rad = radius;
         }
-        // Code for the inverse mask
+        // Code for the inverse mask to remove the plates
         Mat inverse_mask, mask2, mask3, bread_image2;
         bitwise_not(mask, inverse_mask);
         Mat result;
         image.copyTo(result, inverse_mask);
-        breadFinder(result, rad);
+
+        // Go into bread-finding
+        bool found;
+        Rect rectangle = breadFinder(result, rad, &found);
+
+        // Write the result of the annotation
+        if(found){}
+        std::ofstream outputFile;
+        outputFile.open(results + "/" +  + ".txt");
+
+        if (outputFile.is_open()) {
+            outputFile << "ID: 13; [" << "]" << std::endl;
+            outputFile.close();
+        }
+        else {
+            std::cerr << "Unable to create/open file" << std::endl;
+        }
        
 
     }
@@ -60,7 +87,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void breadFinder(Mat& result, int radius) {
+Rect breadFinder(Mat& result, int radius, bool* found) {
     Mat hsv_image, mask2, mask3, bread_image2;
 
     // Load the templates and check for their existence
@@ -172,6 +199,7 @@ void breadFinder(Mat& result, int radius) {
             rec = Rect(topLeft, bottomRight);
         }
 
+
     //mask = Mat::ones(result.size(), CV_32S);
     ////mask(rec) = 0;
     //Mat roiMask = mask(rec);
@@ -199,7 +227,9 @@ void breadFinder(Mat& result, int radius) {
     //    }
     //}
     //imshow("Result", dst);
+    *found = true;
     waitKey(0);
+    return rec;
 }
 
 
