@@ -11,8 +11,9 @@ using namespace cv;
 const int bigRadius = 295;
 const int smallRadius = 287;
 double lowerBound = 0.1;
+double BREAD_THRESH = 0.73;
 
-void breadFinder(Mat& image, int radius);
+void breadFinder(Mat& image, int radius,bool check, bool* hasBread);
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
 void writeBoundBox(String& path, Rect box, int ID);
 
@@ -52,7 +53,9 @@ int main(int argc, char** argv) {
         bitwise_not(mask, inverse_mask);
         Mat result;
         image.copyTo(result, inverse_mask);
-        breadFinder(result, rad);
+        bool haveBread;
+        breadFinder(result, rad, true, &haveBread);
+        if (!haveBread) break;
        
 
     }
@@ -62,7 +65,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void breadFinder(Mat& result, int radius) {
+void breadFinder(Mat& result, int radius, bool check, bool* hasBread) {
     Mat hsv_image, mask2, mask3, bread_image2;
 
     // Load the templates and check for their existence
@@ -120,6 +123,11 @@ void breadFinder(Mat& result, int radius) {
             cout << "crumbs " << minVal2 << endl;
 
         }
+
+    if (check && minVal >= BREAD_THRESH) {
+        hasBread = false;
+        return;
+    }
 
     // Create the bounding box
      if (minVal2 < lowerBound) { 
