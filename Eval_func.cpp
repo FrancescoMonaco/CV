@@ -1,10 +1,13 @@
 #include "Eval_func.h"
 #include <math.h>
-const float IOU_THRESH = 0.5;
+#include <numeric>
 
+//***Variables, namespaces definitions***
+const float IOU_THRESH = 0.5;
+const int NUM_CLASSES = 14;
 namespace fs = std::filesystem;
 
-
+//***Functions implementations***
 
 std::vector<BoundingBox> loadBoundingBoxData(const std::string& filePath) {
     std::ifstream file(filePath);
@@ -119,9 +122,7 @@ float processBoxPreds(const std::vector<std::vector<BoundingBox>>& resultData, c
     }
 
     // Compute average precision for class
-    std::vector<float> AP(14, 0);
-
-
+    std::vector<float> AP = computeAP(recall, precision);
 
     // Compute mAP
     float mAP = 0.0f;
@@ -132,26 +133,76 @@ float processBoxPreds(const std::vector<std::vector<BoundingBox>>& resultData, c
     return mAP;
 }
 
-std::vector<cv::Mat> processSemanticSegmentation(const std::string& relativePath, const std::string& folder) {
-    std::vector<cv::Mat> images;
-    std::string boundingBoxDir;
-
-    for (const auto& entry : fs::recursive_directory_iterator(relativePath)) {
-        if (entry.is_directory() && entry.path().filename() == folder) {
-            boundingBoxDir = entry.path().string();
-        }
+float processSemanticSegmentation(const std::vector<cv::Mat>& resultData, const std::vector<cv::Mat>& predData)
+{
+    //for each couple of allineated images, compute IoU and push it into a vector
+    std::vector<float> IoU;
+    for (int i = 0; i < resultData.size(); i++) {
+            float iou = computeIoU(resultData[i], predData[i]);
+            IoU.push_back(iou);
     }
 
-    if (!boundingBoxDir.empty()) {
-        for (const auto& entry : fs::directory_iterator(boundingBoxDir)) {
-            if (entry.is_regular_file() && entry.path().extension() == ".png") {
-                cv::Mat data = loadSemanticSegmentationData(entry.path().string());
-                if (!data.empty()) {
-                    images.push_back(data);
-                }
+    // return mean IoU
+    float mIoU = 0.0f;
+    for (float value : IoU) {
+        mIoU += value;
+    }
+    mIoU = mIoU / IoU.size();
+    return mIoU;
+}
+
+float computeIoU(const cv::Mat & result, const cv::Mat & pred)
+{
+    //compute intersection and union for each class
+    std::vector<float> intersection (NUM_CLASSES, 0.0f);
+    std::vector<float> unionArea (NUM_CLASSES, 0.0f);
+    for (int i = 0; i < result.rows; i++) {
+        for (int j = 0; j < result.cols; j++) {
+            if (result.at<uchar>(i, j) == pred.at<uchar>(i, j)) {
+                intersection[result.at<uchar>(i, j)]++;
             }
+            unionArea[result.at<uchar>(i, j)]++;
+            unionArea[pred.at<uchar>(i, j)]++;
         }
     }
+    // compute IoU for each class
+    std::vector<float> IoU (NUM_CLASSES, 0.0f);
+    for (int i = 0; i < NUM_CLASSES; i++) {
+        IoU[i] = intersection[i] / unionArea[i];
+    }
+    // return mean IoU
+    float mIoU = 0.0f;
+    for (float value : IoU) {
+        mIoU += value;
+    }
+    mIoU = mIoU / IoU.size();
+    return mIoU;
+}
 
-    return images;
+std::vector<float> computeAP(const std::vector<std::vector<float>>& precision, const std::vector<std::vector<float>>& recall) {
+    std::vector<float> ap;
+    for (size_t i = 0; i < precision.size(); ++i) {
+        const std::vector<float>& prec = precision[i];
+        const std::vector<float>& rec = recall[i];
+
+        // Sort precision and recall vectors in descending order of recall
+        std::vector<size_t> indices(prec.size());
+        std::iota(indices.begin(), indices.end(), 0);
+        std::sort(indices.begin(), indices.end(), [&rec](size_t a, size_t b) { return rec[a] > rec[b]; });
+
+        // Compute interpolated precision
+        std::vector<float> interpolatedPrec(indices.size());
+        float maxPrec = 0.0f;
+        for (size_t j = 0; j < indices.size(); ++j) {
+            size_t idx = indices[j];
+            maxPrec = std::max(maxPrec, prec[idx]);
+            interpolatedPrec[j] = maxPrec;
+        }
+
+        // Compute average precision
+        float sumPrec = std::accumulate(interpolatedPrec.begin(), interpolatedPrec.end(), 0.0f);
+        ap.push_back(sumPrec / static_cast<float>(interpolatedPrec.size()));
+    }
+
+    return ap;
 }
