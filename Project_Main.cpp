@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
+
 using namespace std;
 using namespace cv;
 
@@ -12,12 +14,13 @@ double lowerBound = 0.1;
 
 void breadFinder(Mat& image, int radius);
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
+void writeBoundBox(String& path, Rect box, int ID);
 
 int main(int argc, char** argv) {
     // check argc
     vector<cv::Mat> images;
 
-    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray5/*.jpg");
+    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray8/*.jpg");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
 
@@ -34,7 +37,7 @@ int main(int argc, char** argv) {
         Mat mask = Mat::zeros(image.size(), CV_8UC1); // Mask initialization
         cvtColor(image, grayscale, cv::COLOR_BGR2GRAY);
         int rad;
-        HoughCircles(grayscale, circles, HOUGH_GRADIENT, 1, grayscale.rows/3, 180, 60, 230, 350);
+        HoughCircles(grayscale, circles, HOUGH_GRADIENT, 1, grayscale.rows/2.5, 140, 55, 185, 370);
         for (size_t i = 0; i < circles.size(); i++)
         {
             Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
@@ -42,7 +45,6 @@ int main(int argc, char** argv) {
             // draw the outline
             //circle(image, center, radius, Scalar(0, 30, 205), 2, LINE_AA);
             circle(mask, center, radius, Scalar(255), -1);
-            cout << radius << endl;
             if (i == 0) rad = radius;
         }
         // Code for the inverse mask
@@ -53,7 +55,6 @@ int main(int argc, char** argv) {
         breadFinder(result, rad);
        
 
-        waitKey(0);
     }
 
     
@@ -129,8 +130,8 @@ void breadFinder(Mat& result, int radius) {
             // Define the top-left and bottom-right corners of the rectangle
             Point topLeft(center.x - offsetX, center.y - offsetY);
             Point bottomRight(center.x + offsetX, center.y + offsetY);
-            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            //imshow("Rec", result);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
             rec = Rect(topLeft, bottomRight);
         }
         // Choose window size based on the radius of the plates
@@ -142,8 +143,8 @@ void breadFinder(Mat& result, int radius) {
             // Define the top-left and bottom-right corners of the rectangle
             Point topLeft(center.x - offsetX, center.y - offsetY);
             Point bottomRight(center.x + offsetX, center.y + offsetY);
-            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            //imshow("Rec", result);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
             rec = Rect(topLeft, bottomRight);
         }
      else if (radius > bigRadius) {
@@ -155,8 +156,8 @@ void breadFinder(Mat& result, int radius) {
             // as a bigger box due to perspective
             Point topLeft(center.x - 1.5*offsetX, center.y - 1.5*offsetY);
             Point bottomRight(center.x + 1.5*offsetX, center.y + 1.5*offsetY);
-            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            //imshow("Rec", result);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
             rec = Rect(topLeft, bottomRight);
         }
      else {
@@ -168,14 +169,14 @@ void breadFinder(Mat& result, int radius) {
             // as a slightly bigger box due to perspective
             Point topLeft(center.x - 0.4*offsetX, center.y - 1.5 * offsetY);
             Point bottomRight(center.x + 1.1*offsetX, center.y + 1.2 * offsetY);
-            //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-            //imshow("Rec", result);
+            rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+            imshow("Rec", result);
             rec = Rect(topLeft, bottomRight);
         }
 
     
 
-    mask = Mat::ones(result.size(), CV_32FC1);
+/*     mask = Mat::ones(result.size(), CV_32FC1);
     //mask(rec) = 0;
     Mat roiMask = mask(rec);
     roiMask = 0;
@@ -199,9 +200,19 @@ void breadFinder(Mat& result, int radius) {
         }
     }
     imshow("Result", dst);
-    waitKey(0);
+ */    waitKey(0);
 }
 
+void writeBoundBox(String& path, Rect box, int ID){
+    //Open the file to write or create it if it doesn't exist
+    ofstream file(path, ios::app);
+    if (!file.is_open()) {
+        cout << "Unable to open file";
+        exit(1); // terminate with error
+    }
+    //Write in format ID:id; [x, y, w, h]
+    file << "ID:" << ID << "; [" << box.x << ", " << box.y << ", " << box.width << ", " << box.height << "]" << endl;
+}
 
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2)
 {
