@@ -19,6 +19,8 @@ double SALAD_THRESH = 0.38;
 void breadFinder(Mat& image, int radius,bool check, bool* hasBread, Rect* box);
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
 void writeBoundBox(String& path, Rect box, int ID);
+int pastaRecognition(Mat& image);
+
 vector<Mat> getImageBoxes(Mat& image);
 
 void classifier(Mat& image);
@@ -416,4 +418,55 @@ bool apply_ORB(cv::Mat& in1, cv::Mat& in2)
     if (pruned_matches.size() > tresh)
         return true;
     return false;
+}
+
+int pastaRecognition(Mat& image){
+    // Extract the number of pixels in the green, yellow, light red, dark red, brown range
+    int green = 0, yellow = 0, light_red = 0, dark_red = 0, brown = 0;
+    for (int i = 0; i < image.rows; i++) {
+        for (int j = 0; j < image.cols; j++){
+            Vec3b pixel = image.at<Vec3b>(i, j);
+            if (pixel[0] > 100 && pixel[1] > 100 && pixel[2] > 100) {
+                green++;
+            }
+            else if (pixel[0] > 100 && pixel[1] > 100 && pixel[2] < 100) {
+                yellow++;
+            }
+            else if (pixel[0] > 100 && pixel[1] < 100 && pixel[2] < 100) {
+                light_red++;
+            }
+            else if (pixel[0] < 100 && pixel[1] < 100 && pixel[2] < 100) {
+                dark_red++;
+            }
+            else if (pixel[0] < 100 && pixel[1] < 100 && pixel[2] > 100) {
+                brown++;
+            }
+        }
+    }
+
+    // If brown is the most common color, it's rice
+    if (brown > yellow && brown > light_red && brown > dark_red && brown > green) {
+        return 5;
+    }
+    // If green is the most common color, it's pesto
+    if (green > yellow && green > light_red && green > dark_red) {
+        return 1;
+    }
+
+    // If dark red is the most common color, it's ragu
+    if (dark_red > yellow && dark_red > light_red && dark_red > green) {
+        return 3;
+    }
+
+    // If red and yellow are similar in number and the others are low it's tomato
+    if (light_red > green && light_red > dark_red && yellow > green && yellow > dark_red) {
+        return 2;
+    }
+
+    // If light red is the most common color, it's sauce and mussels
+    if (light_red > green && light_red > dark_red && light_red > yellow) {
+        return 4;
+    }
+
+
 }
