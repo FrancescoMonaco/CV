@@ -24,21 +24,12 @@
     <ClCompile Include="processing.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Project\Eval.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="Project\Eval_func.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="processing.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="Project\Eval_func.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

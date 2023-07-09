@@ -142,8 +142,6 @@
   <ItemGroup>
     <ClCompile Include="CV.cpp" />
     <ClCompile Include="processing.cpp" />
-    <ClCompile Include="Project\Eval.cpp" />
-    <ClCompile Include="Project\Eval_func.cpp" />
     <ClCompile Include="Project_Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="processing.h" />
-    <ClInclude Include="Project\Eval_func.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

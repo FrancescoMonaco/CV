@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fstream>
 
+const std::string PREDS_BB = "box_preds";
+const std::string PREDS_SS = "mask_preds";
 using namespace std;
 using namespace cv;
 
@@ -12,16 +14,20 @@ const int bigRadius = 295;
 const int smallRadius = 287;
 double lowerBound = 0.1;
 double BREAD_THRESH = 0.73;
+double SALAD_THRESH = 0.38;
 
-void breadFinder(Mat& image, int radius,bool check, bool* hasBread);
+void breadFinder(Mat& image, int radius,bool check, bool* hasBread, Rect* box);
 bool apply_ORB(cv::Mat& in1, cv::Mat& in2);
 void writeBoundBox(String& path, Rect box, int ID);
+vector<Mat> getImageBoxes(Mat& image);
+
+void classifier(Mat& image);
 
 int main(int argc, char** argv) {
     // check argc
     vector<cv::Mat> images;
 
-    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray8/*.jpg");
+    string folder("/Users/franc/Downloads/Food_leftover_dataset/tray3/*.jpg");
     vector<cv::String> filenames;
     glob(folder, filenames, false);
 
@@ -48,15 +54,49 @@ int main(int argc, char** argv) {
             circle(mask, center, radius, Scalar(255), -1);
             if (i == 0) rad = radius;
         }
-        // Code for the inverse mask
-        Mat inverse_mask, mask2, mask3, bread_image2;
-        bitwise_not(mask, inverse_mask);
-        Mat result;
-        image.copyTo(result, inverse_mask);
-        bool haveBread;
-        breadFinder(result, rad, true, &haveBread);
-        if (!haveBread) break;
+
+        // Code for the inverse mask - BREAD PART
+        //Mat inverse_mask, mask2, mask3, bread_image2;
+        //bitwise_not(mask, inverse_mask);
+        //Mat result;
+        //image.copyTo(result, inverse_mask);
+        //bool haveBread; Rect* box;
+        //breadFinder(result, rad, true, &haveBread, box);
+        //if (!haveBread) break;
+        //writeBoundBox(folder, *box, 13);
        
+       // PLATES PART
+       //for each circle extract a rectangle with just the plate
+         for (size_t i = 0; i < circles.size(); i++){
+                Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+                int radius = cvRound(circles[i][2]);
+                int x = center.x - radius;
+                int y = center.y - radius;
+                int width = 2 * radius;
+                int height = 2 * radius;
+
+                // Perform boundary checks and adjust the rectangle if necessary
+                if (x < 0) {
+                    width += x;
+                    x = 0;
+                }
+                if (y < 0) {
+                    height += y;
+                    y = 0;
+                }
+                if (x + width > image.cols) {
+                    width = image.cols - x;
+                }
+                if (y + height > image.rows) {
+                    height = image.rows - y;
+                }
+
+                // Create the rectangle ROI
+                Rect rec(x, y, width, height);
+                Mat plate = image(rec);
+                classifier(plate);
+                waitKey(0);
+         }
 
     }
 
@@ -65,7 +105,53 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void breadFinder(Mat& result, int radius, bool check, bool* hasBread) {
+void classifier(Mat& image) {
+    Mat salad_template = imread("/Users/franc/Downloads/insalata.png");
+
+    if(salad_template.data == NULL)
+        throw invalid_argument("Data does not exist");
+
+    //if the template is bigger than the image, resize it
+    if (salad_template.cols > image.cols || salad_template.rows > image.rows) {
+        resize(salad_template, salad_template, Size(image.cols, image.rows));
+    }
+
+    // Initialization for TM values
+    double minVal, maxVal;
+    Point minLoc, maxLoc;
+
+    // Bread matching
+            Mat matchOut;
+            matchTemplate(image, salad_template, matchOut, TM_SQDIFF_NORMED);
+
+            minMaxLoc(matchOut, &minVal, &maxVal, &minLoc, &maxLoc);
+            cout << minVal << endl;
+            // Create the rectangle by checking the dimensions of the template and making sure it fits in the image
+            int x = minLoc.x;
+            int y = minLoc.y;
+            int width = salad_template.cols;
+            int height = salad_template.rows;
+
+            if (x < 0) {
+                width += x;
+                x = 0;
+            }
+            if (y < 0) {
+                height += y;
+                y = 0;
+            }
+            if (x + width > image.cols) {
+                width = image.cols - x;
+            }
+            if (y + height > image.rows) {
+                height = image.rows - y;
+            }
+
+            Rect rec(x, y, width, height);
+            imshow("salad", image(rec));
+}
+
+void breadFinder(Mat& result, int radius, bool check, bool* hasBread, Rect* box) {
     Mat hsv_image, mask2, mask3, bread_image2;
 
     // Load the templates and check for their existence
@@ -74,6 +160,16 @@ void breadFinder(Mat& result, int radius, bool check, bool* hasBread) {
 
     if (bread_template.data == NULL || crumbs_template.data == NULL)
         throw invalid_argument("Data does not exist");
+
+    //if the templates are bigger than the image, resize them
+
+    if (bread_template.cols > result.cols || bread_template.rows > result.rows) {
+        resize(bread_template, bread_template, Size(result.cols, result.rows));
+    }
+    if (crumbs_template.cols > result.cols || crumbs_template.rows > result.rows) {
+        resize(crumbs_template, crumbs_template, Size(result.cols, result.rows));
+    }
+
 
     // Convert to HSV
     cvtColor(result, hsv_image, COLOR_BGR2HSV);
@@ -85,8 +181,8 @@ void breadFinder(Mat& result, int radius, bool check, bool* hasBread) {
 
     // Mask the colors that are not near the browns
     // this removes the tag, the plastic cup and the yogurt
-    inRange(sat_channel, 40, 200, mask3); // only for tray 5
-    inRange(hue_channel, 5, 95, mask2); //threshold for bread hue
+    inRange(sat_channel, 40, 200, mask3);
+    inRange(hue_channel, 5, 95, mask2);
     Mat bread_image;
     bitwise_and(result, result, bread_image, mask2);
     bitwise_and(bread_image, bread_image, bread_image2, mask3);
@@ -100,32 +196,21 @@ void breadFinder(Mat& result, int radius, bool check, bool* hasBread) {
     Rect rec;
 
     // Bread matching
-    if (1) { // the if is used to easily delete the local variables
-
-            imshow("Hue", bread_image2);
-
-
             Mat matchOut;
             matchTemplate(bread_image2, bread_template, matchOut, TM_SQDIFF_NORMED);
 
             minMaxLoc(matchOut, &minVal, &maxVal, &minLoc, &maxLoc);
 
-            cout << "Bread " << minVal << " ";
-
-    }
-    if(1) {
 
             Mat matchOut2;
             matchTemplate(bread_image, crumbs_template, matchOut2, TM_SQDIFF_NORMED);
 
 
             minMaxLoc(matchOut2, &minVal2, &maxVal2, &minLoc2, &maxLoc2);
-            cout << "crumbs " << minVal2 << endl;
 
-        }
-
+    // Check if the bread is present
     if (check && minVal >= BREAD_THRESH) {
-        hasBread = false;
+        *hasBread = false;
         return;
     }
 
@@ -183,33 +268,96 @@ void breadFinder(Mat& result, int radius, bool check, bool* hasBread) {
         }
 
     
-
-/*     mask = Mat::ones(result.size(), CV_32FC1);
-    //mask(rec) = 0;
-    Mat roiMask = mask(rec);
-    roiMask = 0;
-    mask.at<float>(minLoc) = 2;
-
-    watershed(result, mask);
-    vector<Vec3b> colors;
-    colors.push_back(Vec3b(0, 0, 255));
-    colors.push_back(Vec3b(0, 255, 255));
-    colors.push_back(Vec3b(255, 255, 255));
-
-    Mat dst = Mat::zeros(mask.size(), CV_8UC3);
-    result.copyTo(dst);
-    for (int i = 0; i < mask.rows; i++)
-    {
-        for (int j = 0; j < mask.cols; j++)
-        {
-            int index = mask.at<int>(i, j);
-                dst.at<Vec3b>(i, j) = colors[index - 1];
-      
-        }
-    }
-    imshow("Result", dst);
- */    waitKey(0);
+        waitKey(0);
+        box = &rec;
 }
+
+/// @brief Extract the plates using the Hough Transform
+/// @param image, image to be processed
+/// @return a vecor of the extracted images
+std::vector<cv::Mat> getImageBoxes(cv::Mat& image){
+     GaussianBlur(image, image, cv::Size(3, 3), 0.5);
+     std::vector<cv::Vec3f> circles; std::vector<cv::Mat> extractions;
+     cv::Mat grayscale;
+     cvtColor(image, grayscale, cv::COLOR_BGR2GRAY);
+     HoughCircles(grayscale, circles, HOUGH_GRADIENT, 1, grayscale.rows/2.5, 140, 55, 185, 370);
+        for (size_t i = 0; i < circles.size(); i++)
+        {
+            Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+            int radius = cvRound(circles[i][2]);
+            
+            //find the rectangle that contains the circle
+                int x = center.x - radius;
+                int y = center.y - radius;
+                int width = 2 * radius;
+                int height = 2 * radius;
+
+                // Perform boundary checks and adjust the rectangle if necessary
+                if (x < 0) {
+                    width += x;
+                    x = 0;
+                }
+                if (y < 0) {
+                    height += y;
+                    y = 0;
+                }
+                if (x + width > image.cols) {
+                    width = image.cols - x;
+                }
+                if (y + height > image.rows) {
+                    height = image.rows - y;
+                }
+                extractions.push_back(image(Rect(x, y, width, height)));
+                
+         }
+    return extractions;
+    }
+
+void classifier(Mat& image) {
+    Mat salad_template = imread("/Users/franc/Downloads/insalata.png");
+
+    if(salad_template.data == NULL)
+        throw invalid_argument("Data does not exist");
+
+    //if the template is bigger than the image, resize it
+    if (salad_template.cols > image.cols || salad_template.rows > image.rows) {
+        resize(salad_template, salad_template, Size(image.cols, image.rows));
+    }
+
+    // Initialization for TM values
+    double minVal, maxVal;
+    Point minLoc, maxLoc;
+
+    // Bread matching
+            Mat matchOut;
+            matchTemplate(image, salad_template, matchOut, TM_SQDIFF_NORMED);
+
+            minMaxLoc(matchOut, &minVal, &maxVal, &minLoc, &maxLoc);
+            cout << minVal << endl;
+            // Create the rectangle by checking the dimensions of the template and making sure it fits in the image
+            int x = minLoc.x;
+            int y = minLoc.y;
+            int width = salad_template.cols;
+            int height = salad_template.rows;
+
+            if (x < 0) {
+                width += x;
+                x = 0;
+            }
+            if (y < 0) {
+                height += y;
+                y = 0;
+            }
+            if (x + width > image.cols) {
+                width = image.cols - x;
+            }
+            if (y + height > image.rows) {
+                height = image.rows - y;
+            }
+
+            Rect rec(x, y, width, height);
+        }
+
 
 void writeBoundBox(String& path, Rect box, int ID){
     //Open the file to write or create it if it doesn't exist
