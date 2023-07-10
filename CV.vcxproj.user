@@ -4,7 +4,7 @@
     <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>"C:\Users\franc\Downloads\Food_leftover_dataset\tray5\food_image.jpg"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>/Users/franc/Downloads/Food_leftover_dataset</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

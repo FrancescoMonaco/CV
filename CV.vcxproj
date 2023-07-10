@@ -141,14 +141,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CV.cpp" />
-    <ClCompile Include="processing.cpp" />
-    <ClCompile Include="Project_Main.cpp" />
+    <ClCompile Include="Eval.cpp" />
+    <ClCompile Include="Eval_func.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="processing.h" />
+    <ClInclude Include="Eval_func.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
