@@ -1,2 +1,46 @@
-﻿  Eval.cpp
+﻿  Project_Main.cpp
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(210,60): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+          with
+          [
+              _Tp=int
+          ]
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(210,36): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+          with
+          [
+              _Tp=int
+          ]
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(211,64): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+          with
+          [
+              _Tp=int
+          ]
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(211,40): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+          with
+          [
+              _Tp=int
+          ]
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(223,60): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+          with
+          [
+              _Tp=int
+          ]
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(223,36): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+          with
+          [
+              _Tp=int
+          ]
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(224,64): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+          with
+          [
+              _Tp=int
+          ]
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(224,40): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+          with
+          [
+              _Tp=int
+          ]
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(417,24): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(418,24): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(419,24): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(420,24): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
   CV.vcxproj -> C:\Users\franc\source\repos\CV\x64\Debug\CV.exe
