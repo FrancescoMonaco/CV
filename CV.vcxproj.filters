@@ -18,16 +18,10 @@
     <ClCompile Include="CV.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="processing.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="Project_Main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Project\Eval.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="Project\Eval_func.cpp">
+    <ClCompile Include="processing.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +32,7 @@
     <ClInclude Include="processing.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Project\Eval_func.h">
+    <ClInclude Include="Constants.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
