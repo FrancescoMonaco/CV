@@ -29,10 +29,10 @@
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="processing.h">
+    <ClInclude Include="Constants.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h">
+    <ClInclude Include="processing.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

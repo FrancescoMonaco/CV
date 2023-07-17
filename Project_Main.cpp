@@ -58,18 +58,18 @@ int main(int argc, char** argv) {
                 }
 
                 //BREAD PART
-                //Mat inverse_mask;
-                //bitwise_not(mask, inverse_mask);
-                //Mat rec_bread; Rect bread_box;
-                //image.copyTo(rec_bread, inverse_mask);
+                Mat inverse_mask;
+                bitwise_not(mask, inverse_mask);
+                Mat rec_bread; Rect bread_box;
+                image.copyTo(rec_bread, inverse_mask);
 
-                //if (image_in_process == 0) // for the first image check if there is bread, set hasBread for the future
-                //     bread_box = breadFinder(rec_bread, rad, true, &hasBread, relativePath);
-                //else if (hasBread)
-                //     bread_box = breadFinder(rec_bread, rad, false, &hasBread, relativePath);
-                //if(hasBread){
-                //    writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", bread_box, BREAD);
-                //}
+                if (image_in_process == 0) // for the first image check if there is bread, set hasBread for the future
+                     bread_box = breadFinder(rec_bread, rad, true, &hasBread, relativePath);
+                else if (hasBread)
+                     bread_box = breadFinder(rec_bread, rad, false, &hasBread, relativePath);
+                if(hasBread){
+                    writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", bread_box, BREAD);
+                }
 
                 //FOR EACH PLATE
                 //put the plates in a vector
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
                     //for each plate
                     for (size_t i = 0; i < plates.size(); i++){
                         // if the corresponding circle radius is the smallest, check if it's salad
-                        if (circles[i][2] == smallestCircle){
+                        if (plates.size() > 2 && (cvRound(circles[i][2]) == smallestCircle)){
                             //check if it is salad
                             Rect salad_rect = matchSalad(plates[i], relativePath);
                             if (salad_rect != Rect(0, 0, 0, 0)){
@@ -123,8 +123,9 @@ int main(int argc, char** argv) {
                                 writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", salad_rect, SALAD);
                                 recognizedFood.push_back(plates[i]);
                                 recognizedFoodID.push_back(SALAD);
-                                continue;
+                                rectangle(image, salad_rect, Scalar(120, 200, 50), 2);
                             }
+                            continue;
                         }
                         //check if it is the first or second dish
                         int dish = 1;//firstorSecond(plates[i]);
@@ -136,10 +137,10 @@ int main(int argc, char** argv) {
 
                             Rect pasta_rect;
                             //create a rectangle with the same center of the circle and the same area
-                            pasta_rect.x = circles[i][0] - circles[i][2];
-                            pasta_rect.y = circles[i][1] - circles[i][2];
-                            pasta_rect.width =  circles[i][2];
-                            pasta_rect.height = circles[i][2];
+                            pasta_rect.x = 0.05 * plates[i].cols;
+                            pasta_rect.y = 0.05 * plates[i].rows;
+                            pasta_rect.width = plates[i].cols - 0.25 * plates[i].cols;
+                            pasta_rect.height = plates[i].rows - 0.25 * plates[i].rows;
                             //transform the rectangle in the original image
                             pasta_rect.x += circles[i][0] - circles[i][2];
                             pasta_rect.y += circles[i][1] - circles[i][2];
@@ -155,7 +156,7 @@ int main(int argc, char** argv) {
                         //if it is the second dish
                         else if (dish == 2){
                             //classify the second dish
-                            int second_num;
+                            int second_num, side_num;
                             Rect secondDish = secondDishClassifier(plates[i], relativePath, second_num);
                             // transform the rectangle in the original image
                             secondDish.x += circles[i][0] - circles[i][2];
@@ -164,27 +165,41 @@ int main(int argc, char** argv) {
                             writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", secondDish, second_num);
                             recognizedFood.push_back(plates[i]);
                             recognizedFoodID.push_back(second_num);
-                            cout << second_num;
+                            cout << second_num << endl;
+
+                            Rect sideDish = sideDishClassifier(plates[i], relativePath, side_num);
+                            // transform the rectangle in the original image
+                            sideDish.x += circles[i][0] - circles[i][2];
+                            sideDish.y += circles[i][1] - circles[i][2];
+                            //write the bounding box
+                            writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", sideDish, side_num);
+                            recognizedFood.push_back(plates[i]);
+                            recognizedFoodID.push_back(side_num);
+
                             //put the rectangle and show image
-                            rectangle(image, secondDish, Scalar(0, 255, 0), 2);
-                            imshow("Second Dish", image);
+                            rectangle(image, sideDish, Scalar(75, 125, 50), 2);
+                            rectangle(image, secondDish, Scalar(20, 25, 70), 2);
+                            imshow("Second-Side Dish", image);
+                            waitKey(0);
                         }
                     }
                 }
-                ////Subsequently we just match what we found with the new ones
+                //Subsequently we just match what we found with the new ones
                 else {
-                    for(size_t i = 0; i < plates.size(); i++){
-                       // check each plate with the ones we already recognized
-                        int curr_index = 0;
-                       Rect plate_rect = findNewPosition(plates[i], recognizedFood, curr_index);
-                       // transform the rectangle in the original image
-                        plate_rect.x += circles[i][0] - circles[i][2];
-                        plate_rect.y += circles[i][1] - circles[i][2];
-                        rectangle(image, plate_rect, Scalar(0, 254, 32), 2);
-                        imshow("Sec", image);
-                       writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", plate_rect, recognizedFoodID[curr_index]);
-                       waitKey(0);
-                    }
+                    //for(size_t i = 0; i < plates.size(); i++){
+                    //   // check each plate with the ones we already recognized
+                    //    int curr_index = 0;
+                    //   Rect plate_rect = findNewPosition(plates[i], recognizedFood, curr_index);
+                    //   // transform the rectangle in the original image
+                    //    plate_rect.x += circles[i][0] - circles[i][2];
+                    //    plate_rect.y += circles[i][1] - circles[i][2];
+                    //    rectangle(image, plate_rect, Scalar(0, 254, 32), 2);
+                    //    imshow("Sec", image);
+                    //   writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", plate_rect, recognizedFoodID[curr_index]);
+                    //   // Replace the recognized in the same place, to better classify the subsequent
+                   // recognizedFood[curr_index] = plates[i];
+                    //   waitKey(0);
+                    //}
                 }
                 
                 //increase image_in_process

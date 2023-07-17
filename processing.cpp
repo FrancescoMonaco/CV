@@ -76,8 +76,8 @@ Rect breadFinder(Mat& result, int radius, bool check, bool* hasBread, const std:
         // Define the top-left and bottom-right corners of the rectangle
         Point topLeft(center.x - offsetX, center.y - offsetY);
         Point bottomRight(center.x + offsetX, center.y + offsetY);
-        rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-        imshow("Rec", result);
+        //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+        //imshow("Rec", result);
         rec = Rect(topLeft, bottomRight);
     }
     // Choose window size based on the radius of the plates
@@ -89,8 +89,8 @@ Rect breadFinder(Mat& result, int radius, bool check, bool* hasBread, const std:
         // Define the top-left and bottom-right corners of the rectangle
         Point topLeft(center.x - offsetX, center.y - offsetY);
         Point bottomRight(center.x + offsetX, center.y + offsetY);
-        rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-        imshow("Rec", result);
+        //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+        //imshow("Rec", result);
         rec = Rect(topLeft, bottomRight);
     }
     else if (radius > bigRadius) {
@@ -102,8 +102,8 @@ Rect breadFinder(Mat& result, int radius, bool check, bool* hasBread, const std:
         // as a bigger box due to perspective
         Point topLeft(center.x - 1.5 * offsetX, center.y - 1.5 * offsetY);
         Point bottomRight(center.x + 1.5 * offsetX, center.y + 1.5 * offsetY);
-        rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-        imshow("Rec", result);
+        //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+        //imshow("Rec", result);
         rec = Rect(topLeft, bottomRight);
     }
     else {
@@ -115,13 +115,11 @@ Rect breadFinder(Mat& result, int radius, bool check, bool* hasBread, const std:
         // as a slightly bigger box due to perspective
         Point topLeft(center.x - 0.4 * offsetX, center.y - 1.5 * offsetY);
         Point bottomRight(center.x + 1.1 * offsetX, center.y + 1.2 * offsetY);
-        rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
-        imshow("Rec", result);
+        //rectangle(result, topLeft, bottomRight, Scalar(0, 0, 255));
+        //imshow("Rec", result);
         rec = Rect(topLeft, bottomRight);
     }
 
-
-    waitKey(0);
     return rec;
 }
 
@@ -275,25 +273,32 @@ cv::Rect sideDishClassifier(cv::Mat& in1, const std::string& relativePath, int& 
     // Find the max and use that template to locate the side dish
     Mat template_to_use;
     if (dist1 > dist2) {
-       template_to_use = potato_template;
+       template_to_use = edges_potato;
        ID = POTATOES;
     }
     else {
-        template_to_use = beans_template;
+        template_to_use = edges_bean;
         ID = BEANS;
     }
+    // Cut the edges image by 1/2 to avoid the border
+    edges_in = edges_in(Rect(0, edges_in.rows / 2, edges_in.cols, edges_in.rows / 2));
+
     // Apply template matching with the two images, find a rect and return it
     Mat result;
-    matchTemplate(in1, template_to_use, result, TM_SQDIFF_NORMED);
+    matchTemplate(edges_in, template_to_use, result, TM_SQDIFF);
     double minVal, maxVal;
     Point minLoc, maxLoc;
     minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
-    // Create the rectangle by checking the dimensions of the template and making sure it fits in the image
-    int x = minLoc.x;
-    int y = minLoc.y;
-    int width = template_to_use.cols;
-    int height = template_to_use.rows;
-    
+
+   // Create a rect in the corner of the image
+    int x = 0.05*in1.cols;
+    int y = 0.05*in1.rows;
+    int width = in1.cols - 0.25*in1.cols;
+    int height = in1.rows - 0.25*in1.rows;
+    // Move a bit to the minimum point
+    x += 0.05*minLoc.x;
+    y += 0.05*minLoc.y;
+
     if (x < 0) {
         width += x;
         x = 0;
@@ -375,7 +380,11 @@ cv::Rect secondDishClassifier(cv::Mat &in1, const std::string& relativePath, int
         template_to_use = sea_template;
         ID = SEAFOOD;
     }
-
+    // Resize the template if it is too big
+    if (template_to_use.cols > in1.cols / 2) {
+        double scale = (double)in1.cols / (2 * template_to_use.cols);
+        resize(template_to_use, template_to_use, Size(), scale, scale);
+    }
     // Use template matching to find the location of the second dish
     Mat result;
     matchTemplate(in1, template_to_use, result, TM_SQDIFF_NORMED);
@@ -385,6 +394,12 @@ cv::Rect secondDishClassifier(cv::Mat &in1, const std::string& relativePath, int
     int y = minLoc.y;
     int width = template_to_use.cols;
     int height = template_to_use.rows;
+    //Make the rectangle 1.5 times bigger
+    x -= width / 4;
+    y -= height / 4;
+    width += width / 2;
+    height += height / 2;
+
 
     // Check if the template is too close to the border
     if (x < 0) {
