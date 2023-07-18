@@ -180,30 +180,29 @@ int main(int argc, char** argv) {
                             rectangle(image, sideDish, Scalar(75, 125, 50), 2);
                             rectangle(image, secondDish, Scalar(20, 25, 70), 2);
                             imshow("Second-Side Dish", image);
-                            waitKey(0);
                         }
                     }
                 }
                 //Subsequently we just match what we found with the new ones
                 else {
-                    //for(size_t i = 0; i < plates.size(); i++){
-                    //   // check each plate with the ones we already recognized
-                    //    int curr_index = 0;
-                    //   Rect plate_rect = findNewPosition(plates[i], recognizedFood, curr_index);
-                    //   // transform the rectangle in the original image
-                    //    plate_rect.x += circles[i][0] - circles[i][2];
-                    //    plate_rect.y += circles[i][1] - circles[i][2];
-                    //    rectangle(image, plate_rect, Scalar(0, 254, 32), 2);
-                    //    imshow("Sec", image);
-                    //   writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", plate_rect, recognizedFoodID[curr_index]);
-                    //   // Replace the recognized in the same place, to better classify the subsequent
-                   // recognizedFood[curr_index] = plates[i];
-                    //   waitKey(0);
-                    //}
+                    for(size_t i = 0; i < plates.size(); i++){
+                       // check each plate with the ones we already recognized
+                        int curr_index = 0;
+                       Rect plate_rect = findNewPosition(plates[i], recognizedFood, curr_index);
+                       // transform the rectangle in the original image
+                        plate_rect.x += circles[i][0] - circles[i][2];
+                        plate_rect.y += circles[i][1] - circles[i][2];
+                        rectangle(image, plate_rect, Scalar(0, 254, 32), 2);
+                        imshow("Sec", image);
+                        writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", plate_rect, recognizedFoodID[curr_index]);
+                       // Replace the recognized in the same place, to better classify the subsequent
+                        recognizedFood[curr_index] = plates[i];
+                    }
                 }
                 
                 //increase image_in_process
                 image_in_process++;
+                waitKey(0);
             }
         }
     }

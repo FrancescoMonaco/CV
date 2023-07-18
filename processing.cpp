@@ -478,17 +478,18 @@ int pastaRecognition(Mat& image) {
     return index;
 }
 
-cv::Rect findNewPosition(cv::Mat& original, std::vector<cv::Mat> fit, int& MatchID)
+cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchID)
 {
-    // Mask the whitests shades in all images for better matching
+    // Mask the white in all images
     for (int i = 0; i < fit.size(); i++) {
         cv::Mat mask;
-        cv::inRange(fit[i], cv::Scalar(255, 255, 255), cv::Scalar(255, 255, 255), mask);
+        cv::inRange(fit[i], cv::Scalar(210, 210, 210), cv::Scalar(255, 255, 255), mask);
         fit[i].setTo(cv::Scalar(0, 0, 0), mask);
     }
     cv::Mat mask;
-    cv::inRange(original, cv::Scalar(255, 255, 255), cv::Scalar(255, 255, 255), mask);
+    cv::inRange(original, cv::Scalar(210, 210, 210), cv::Scalar(255, 255, 255), mask);
     original.setTo(cv::Scalar(0, 0, 0), mask);
+    
     // For each image in fit find the keypoints and descriptors
     std::vector<cv::KeyPoint> keypoints1, keypoints2;
     cv::Mat descriptors1, descriptors2;
@@ -528,6 +529,29 @@ cv::Rect findNewPosition(cv::Mat& original, std::vector<cv::Mat> fit, int& Match
         std::vector<cv::Point2f> scene_corners(4);
         cv::perspectiveTransform(obj_corners, scene_corners, H);
         cv::Rect rect = cv::boundingRect(scene_corners);
+        //make sure the rec is within the image
+        if (rect.x < 0) {
+            rect.width += rect.x;
+            rect.x = 0;
+        }
+        if (rect.y < 0) {
+            rect.height += rect.y;
+            rect.y = 0;
+        }
+        if (rect.x + rect.width > fit[best].cols) {
+            rect.width = fit[best].cols - rect.x;
+        }
+        if (rect.y + rect.height > fit[best].rows) {
+            rect.height = fit[best].rows - rect.y;
+        }
+        //if the rectangle is too small return a bigger one
+        if (rect.width < 10 || rect.height < 10) {
+            rect.x = 0;
+            rect.y = 0;
+            rect.width = fit[best].cols;
+            rect.height = fit[best].rows;
+        }
+
         return rect;
 
     }
