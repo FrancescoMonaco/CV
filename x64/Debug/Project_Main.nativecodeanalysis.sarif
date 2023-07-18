@@ -1,0 +1,898 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "La variabile 'cv::MatStep::buf' non è inizializzata. Inizializzare sempre una variabile membro (type.6)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/mat.inl.hpp"
+                },
+                "region": {
+                  "startLine": 1172,
+                  "startColumn": 10,
+                  "endLine": 1172,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::MatStep::{ctor}",
+                  "decoratedName": "??0MatStep@cv@@QEAA@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "cv::MatStep::buf"
+          }
+        },
+        {
+          "ruleId": "C26495",
+          "message": {
+            "text": "La variabile 'cv::MatStep::buf' non è inizializzata. Inizializzare sempre una variabile membro (type.6)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/mat.inl.hpp"
+                },
+                "region": {
+                  "startLine": 1178,
+                  "startColumn": 10,
+                  "endLine": 1178,
+                  "endColumn": 10
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::MatStep::{ctor}",
+                  "decoratedName": "??0MatStep@cv@@QEAA@_K@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "targetSymbol": "cv::MatStep::buf"
+          }
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Overflow aritmetico: verrà usato l'operatore '*' su un valore a 4 byte e verrà eseguito il cast del risultato in un valore a 8 byte. Per evitare l'overflow, eseguire il cast del valore nel tipo più ampio prima di chiamare l'operatore '*' (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/mat.inl.hpp"
+                },
+                "region": {
+                  "startLine": 1783,
+                  "startColumn": 12,
+                  "endLine": 1783,
+                  "endColumn": 12
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::SparseMat::elemSize",
+                  "decoratedName": "?elemSize@SparseMat@cv@@QEBA_KXZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Overflow aritmetico: verrà usato l'operatore '+' su un valore a 4 byte e verrà eseguito il cast del risultato in un valore a 8 byte. Per evitare l'overflow, eseguire il cast del valore nel tipo più ampio prima di chiamare l'operatore '+' (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/mat.inl.hpp"
+                },
+                "region": {
+                  "startLine": 1783,
+                  "startColumn": 12,
+                  "endLine": 1783,
+                  "endColumn": 12
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::SparseMat::elemSize",
+                  "decoratedName": "?elemSize@SparseMat@cv@@QEBA_KXZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Overflow aritmetico: verrà usato l'operatore '*' su un valore a 4 byte e verrà eseguito il cast del risultato in un valore a 8 byte. Per evitare l'overflow, eseguire il cast del valore nel tipo più ampio prima di chiamare l'operatore '*' (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/utility.hpp"
+                },
+                "region": {
+                  "startLine": 568,
+                  "startColumn": 61,
+                  "endLine": 568,
+                  "endColumn": 61
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::getElemSize",
+                  "decoratedName": "?getElemSize@cv@@YA_KH@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Overflow aritmetico: verrà usato l'operatore '+' su un valore a 4 byte e verrà eseguito il cast del risultato in un valore a 8 byte. Per evitare l'overflow, eseguire il cast del valore nel tipo più ampio prima di chiamare l'operatore '+' (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/utility.hpp"
+                },
+                "region": {
+                  "startLine": 568,
+                  "startColumn": 61,
+                  "endLine": 568,
+                  "endColumn": 61
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::getElemSize",
+                  "decoratedName": "?getElemSize@cv@@YA_KH@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Overflow aritmetico: verrà usato l'operatore '+' su un valore a 4 byte e verrà eseguito il cast del risultato in un valore a 8 byte. Per evitare l'overflow, eseguire il cast del valore nel tipo più ampio prima di chiamare l'operatore '+' (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/imgproc.hpp"
+                },
+                "region": {
+                  "startLine": 4885,
+                  "startColumn": 16,
+                  "endLine": 4885,
+                  "endColumn": 40
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::LineIterator::++",
+                  "decoratedName": "??ELineIterator@cv@@QEAAAEAV01@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6294",
+          "message": {
+            "text": "Ciclo For definito in modo non corretto: corpo del ciclo non eseguito."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 570,
+                  "startColumn": 5,
+                  "endLine": 570,
+                  "endColumn": 5
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<float,3,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@M$02$00@cv@@QEAA@MMM@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6201",
+          "message": {
+            "text": "L'indice '3' non è compreso nell'intervallo valido degli indici '0'-'2' per il buffer 'this->val' probabilmente allocato nello stack."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 570,
+                  "startColumn": 39,
+                  "endLine": 570,
+                  "endColumn": 44
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<float,3,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@M$02$00@cv@@QEAA@MMM@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6294",
+          "message": {
+            "text": "Ciclo For definito in modo non corretto: corpo del ciclo non eseguito."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 570,
+                  "startColumn": 5,
+                  "endLine": 570,
+                  "endColumn": 5
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<double,3,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@N$02$00@cv@@QEAA@NNN@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6201",
+          "message": {
+            "text": "L'indice '3' non è compreso nell'intervallo valido degli indici '0'-'2' per il buffer 'this->val' probabilmente allocato nello stack."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 570,
+                  "startColumn": 39,
+                  "endLine": 570,
+                  "endColumn": 44
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<double,3,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@N$02$00@cv@@QEAA@NNN@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6294",
+          "message": {
+            "text": "Ciclo For definito in modo non corretto: corpo del ciclo non eseguito."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 562,
+                  "startColumn": 5,
+                  "endLine": 562,
+                  "endColumn": 5
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<float,2,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@M$01$00@cv@@QEAA@MM@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6201",
+          "message": {
+            "text": "L'indice '2' non è compreso nell'intervallo valido degli indici '0'-'1' per il buffer 'this->val' probabilmente allocato nello stack."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 562,
+                  "startColumn": 39,
+                  "endLine": 562,
+                  "endColumn": 44
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<float,2,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@M$01$00@cv@@QEAA@MM@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6294",
+          "message": {
+            "text": "Ciclo For definito in modo non corretto: corpo del ciclo non eseguito."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 562,
+                  "startColumn": 5,
+                  "endLine": 562,
+                  "endColumn": 5
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<double,2,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@N$01$00@cv@@QEAA@NN@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6201",
+          "message": {
+            "text": "L'indice '2' non è compreso nell'intervallo valido degli indici '0'-'1' per il buffer 'this->val' probabilmente allocato nello stack."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 562,
+                  "startColumn": 39,
+                  "endLine": 562,
+                  "endColumn": 44
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<double,2,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@N$01$00@cv@@QEAA@NN@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6294",
+          "message": {
+            "text": "Ciclo For definito in modo non corretto: corpo del ciclo non eseguito."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 578,
+                  "startColumn": 5,
+                  "endLine": 578,
+                  "endColumn": 5
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<float,4,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@M$03$00@cv@@QEAA@MMMM@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6201",
+          "message": {
+            "text": "L'indice '4' non è compreso nell'intervallo valido degli indici '0'-'3' per il buffer 'this->val' probabilmente allocato nello stack."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 578,
+                  "startColumn": 39,
+                  "endLine": 578,
+                  "endColumn": 44
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<float,4,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@M$03$00@cv@@QEAA@MMMM@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6294",
+          "message": {
+            "text": "Ciclo For definito in modo non corretto: corpo del ciclo non eseguito."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 578,
+                  "startColumn": 5,
+                  "endLine": 578,
+                  "endColumn": 5
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<double,4,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@N$03$00@cv@@QEAA@NNNN@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "C6201",
+          "message": {
+            "text": "L'indice '4' non è compreso nell'intervallo valido degli indici '0'-'3' per il buffer 'this->val' probabilmente allocato nello stack."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+                },
+                "region": {
+                  "startLine": 578,
+                  "startColumn": 39,
+                  "endLine": 578,
+                  "endColumn": 44
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cv::Matx<double,4,1>::{ctor}",
+                  "decoratedName": "??0?$Matx@N$03$00@cv@@QEAA@NNNN@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.35.32217.1",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/mat.inl.hpp"
+          },
+          "roles": [
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "6dbe1e5a85572189584198daba3c6d92c673535816ecfd461d88e44b7d74dba2"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/utility.hpp"
+          },
+          "roles": [
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "42d184392cf72b00ed8eda5e1e6e91020549ca19ca9fe7fb576a810dcb1ba4a6"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/imgproc.hpp"
+          },
+          "roles": [
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "add488b36842077fbfac542d999ce5da1fe184fbe5d6569116b0d1f64008dc65"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///C:/Users/franc/Downloads/opencv/build/include/opencv2/core/matx.hpp"
+          },
+          "roles": [
+            "resultFile"
+          ],
+          "hashes": {
+            "sha-256": "3409e83d3b60e7cd8e9f91bd0a9fe055814921fec509894aceb98edeabeb496a"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/source/repos/cv/cv/project_main.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "6208a7b56554064839738cd570488089e0cefdb7d8a3c6a1f535501b8cbb558d"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/source/repos/cv/cv/processing.h"
+          },
+          "hashes": {
+            "sha-256": "fe662ff16e349d72fd0541fb44fdd9a6c4952a74bce0f0f716f163fbfd5eed4b"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/source/repos/cv/cv/constants.h"
+          },
+          "hashes": {
+            "sha-256": "ccfc4e7c5e61217408dae5285a27744f36e1bc669e2351062be461a89b775e03"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core.hpp"
+          },
+          "hashes": {
+            "sha-256": "dfd132f2847f9357fb63dc6bbb16461db736581c7f6605a8cf9b94f035d7fdbf"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/cvdef.h"
+          },
+          "hashes": {
+            "sha-256": "604f1d13e69db4f423b3c9f622dd8d19fb2f4c1ef781bf922720d9c4737d7752"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/version.hpp"
+          },
+          "hashes": {
+            "sha-256": "12e05525a085b53c0d872bda6c783712572d1ea26a3d33fd30a7432a5d107d84"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/hal/interface.h"
+          },
+          "hashes": {
+            "sha-256": "d0d876a5d4c3082ad71541aa6b366ef4dd5efe2d7b9d109d517d6928e181b83e"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/cv_cpu_dispatch.h"
+          },
+          "hashes": {
+            "sha-256": "298696a26509ad423f4f0070be96a899fc111eb532d05ed955263a0df17799fa"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/base.hpp"
+          },
+          "hashes": {
+            "sha-256": "5a3c5081f4f83132da06064fea5d81e648d0b251eafc2d4016c83f7f59559867"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/opencv_modules.hpp"
+          },
+          "hashes": {
+            "sha-256": "f3a63585c90a75bd166460e03ff28ccff73f38a52b04eb8a6f72d02d3b971aa5"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/cvstd.hpp"
+          },
+          "hashes": {
+            "sha-256": "9ba9df62de1fb7719cb81291dbd8448efa8c7d92a75b0c4873af5268beb64b1f"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/cvstd_wrapper.hpp"
+          },
+          "hashes": {
+            "sha-256": "729efef0332e50540c5b29d8853b5dd1378169ff1e8963c6dc86edf74ef77fb9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/neon_utils.hpp"
+          },
+          "hashes": {
+            "sha-256": "ce0436e0cc3e236e317b03a9859ed31f10d56979391252c754f75dfbeaa4ebd4"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/vsx_utils.hpp"
+          },
+          "hashes": {
+            "sha-256": "25f9454ed358cbaac0e8233e8db57f5c4d485f7ef2915352a187d95033183d0f"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/check.hpp"
+          },
+          "hashes": {
+            "sha-256": "5cac11b76348457e5bf22e842b919b44a78da1d88ea57a8c0214ac5f3dce23ce"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/traits.hpp"
+          },
+          "hashes": {
+            "sha-256": "2ee21d68861633bfa835d21e40bc381f63f3e05f3467bff8f4be2931436746ed"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/saturate.hpp"
+          },
+          "hashes": {
+            "sha-256": "7ae18d9a6be2a51d11349323888c4c81fc9c864da5399bdc17f32ae896db6a60"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/fast_math.hpp"
+          },
+          "hashes": {
+            "sha-256": "08f29ecef354b534dd85c33264e51718a1cad235dab457ed8fdb65926007fdda"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/types.hpp"
+          },
+          "hashes": {
+            "sha-256": "c104f414bb8a1b5480673c1ba069f4b7c29f05f197258853e8fd347afb19adf4"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/mat.hpp"
+          },
+          "hashes": {
+            "sha-256": "a097df7d5b4b34b6971e1fa487cbe3eb7ff3c157657827eec529e22aae7aad7b"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/bufferpool.hpp"
+          },
+          "hashes": {
+            "sha-256": "7b81257f13fcc5011f489b6cab29f0a8b4496ab6158b8cf5c254bbc5ea55ce7a"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/persistence.hpp"
+          },
+          "hashes": {
+            "sha-256": "7ba692e413f485abe600ec16224b0e7de2d451a23eb3dcb7e2e01fa65019d51d"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/operations.hpp"
+          },
+          "hashes": {
+            "sha-256": "a454b020aac66461ed9382ff535f84738dd2a72c78e926859d31a205280f3672"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/cvstd.inl.hpp"
+          },
+          "hashes": {
+            "sha-256": "340a651e83315e23a5af89caf95affae0b5cf19691a25eef3cbb43e9d01a9753"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/optim.hpp"
+          },
+          "hashes": {
+            "sha-256": "8c5b36faf0b05d1371b426ae075bcd4ae42e65a2c401aa4924fa442a77b525d1"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/ovx.hpp"
+          },
+          "hashes": {
+            "sha-256": "21a2d7b931f406636958ec299cdd076110e0bf51c5a09004bd2ccd84e9993e3a"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/imgproc/segmentation.hpp"
+          },
+          "hashes": {
+            "sha-256": "30965b9a0dba7f0e77a6db966f06029d5af439f86ac77a2b8b28c34d4973830e"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/highgui.hpp"
+          },
+          "hashes": {
+            "sha-256": "db0cfea4edea11b7a2027ad4959a7c3e37c45fdcfc3056a504e7d59fd1e7ed5e"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/imgcodecs.hpp"
+          },
+          "hashes": {
+            "sha-256": "ba5fb0aba1ff85668c325380d300e76580cbcfbc84ab2936fc92a48845a997e4"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/videoio.hpp"
+          },
+          "hashes": {
+            "sha-256": "1f659fc2e93f266facbe14b0ddc65f42f228d8364373d9c5df35b7d0f55eb3bb"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/features2d.hpp"
+          },
+          "hashes": {
+            "sha-256": "f912c2d662d2d7d735dc960cb5911e448a6f4f0733036f2178dcb1a9167f1fab"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/flann/miniflann.hpp"
+          },
+          "hashes": {
+            "sha-256": "0ff35124a033e0b7eed3ecfd6da5c5bd4c80763005cebcee3ec362e3df6bb99f"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/flann/defines.h"
+          },
+          "hashes": {
+            "sha-256": "a4daedcace54e27be42873615744fd31cf3370226ead0551a3392865a07c5bfd"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/flann/config.h"
+          },
+          "hashes": {
+            "sha-256": "52af9f6013bcaea20aee701403f92c3ea110fe367689aae040a592e4b036239f"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/calib3d.hpp"
+          },
+          "hashes": {
+            "sha-256": "12d29f2185a7b4db7af92e2f0b7ca599c6547c52256a5c0b01421cec4c8ff8af"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/franc/downloads/opencv/build/include/opencv2/core/affine.hpp"
+          },
+          "hashes": {
+            "sha-256": "e6fe5fda34a167a626d7bd3467d7776f1ea2c6dca38d7a1813b5259a9eb2ac04"
+          }
+        }
+      ]
+    }
+  ]
+}

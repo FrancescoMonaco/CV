@@ -32,16 +32,23 @@ int main(int argc, char** argv) {
                     Mat img = imread(str);
                     images.push_back(img);
                 }
+
             // define some variables for the loop, shared info between images
             bool hasBread = false;
             int image_in_process = 0;
-            vector<cv::Mat> recognizedFood;
-            vector<int> recognizedFoodID;
+            vector<cv::Mat> recognizedFood; // vector of the recognized food
+            vector<int> recognizedFoodID;   // vector of the ID of the recognized food
 
             // for each image in the folder
             for (auto& image: images){
                 // get name of the file
                 string name = filenames[image_in_process].substr(filenames[image_in_process].find_last_of("/\\") + 1);
+                // Check if the image is empty
+                if (image.empty()) {
+                    std::cerr << "Could not read the image: " << filenames[image_in_process] << std::endl;
+                    return 1;
+                }
+                // Find the circles
                 GaussianBlur(image, image, Size(3, 3), 0.5);
                 std::vector<Vec3f> circles;
                 Mat grayscale;
@@ -72,9 +79,13 @@ int main(int argc, char** argv) {
                 }
 
                 //FOR EACH PLATE
-                //put the plates in a vector
+
+                // put the plates in a vector "plates" available during the whole computation of this image
+                // put the bounding boxes of the plates in a vector "plates_box" available during the whole computation of this image
                 vector<Mat> plates;
+                vector<Rect> plates_box;
                 int smallestCircle = -1;
+
                 for (size_t i = 0; i < circles.size(); i++){
                     Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
                     int radius = cvRound(circles[i][2]);
@@ -104,14 +115,16 @@ int main(int argc, char** argv) {
                     // Create the rectangle ROI
                     Rect rec(x, y, width, height);
                     Mat plate = image(rec);
+                    plates_box.push_back(rec);
                     plates.push_back(plate);
                 }
 
                 //The first time we need a recognition from 0
                 if (image_in_process==0){
+
                     //for each plate
                     for (size_t i = 0; i < plates.size(); i++){
-                        // if the corresponding circle radius is the smallest, check if it's salad
+                        // if the corresponding circle radius is the smallest, check if it's SALAD
                         if (plates.size() > 2 && (cvRound(circles[i][2]) == smallestCircle)){
                             //check if it is salad
                             Rect salad_rect = matchSalad(plates[i], relativePath);
@@ -127,9 +140,10 @@ int main(int argc, char** argv) {
                             }
                             continue;
                         }
-                        //check if it is the first or second dish
+
+                        //FIRST OR SECOND DISH
                         int dish = 2;//firstorSecond(plates[i]);
-                        //if it is the first dish
+                        //if it is the FIRST DISH
                         if (dish == 1){
                             //classify the pasta
                             int pasta = pastaRecognition(plates[i]);
@@ -153,7 +167,7 @@ int main(int argc, char** argv) {
                             recognizedFood.push_back(plates[i]);
                             recognizedFoodID.push_back(pasta);
                         }
-                        //if it is the second dish
+                        //if it is the SECOND DISH
                         else if (dish == 2){
                             //classify the second dish
                             int second_num, side_num;
@@ -165,8 +179,8 @@ int main(int argc, char** argv) {
                             writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", secondDish, second_num);
                             recognizedFood.push_back(plates[i]);
                             recognizedFoodID.push_back(second_num);
-                            cout << second_num << endl;
 
+                            //classify the side dish
                             Rect sideDish = sideDishClassifier(plates[i], relativePath, side_num);
                             // transform the rectangle in the original image
                             sideDish.x += circles[i][0] - circles[i][2];
@@ -183,41 +197,52 @@ int main(int argc, char** argv) {
                         }
                     }
                 }
+
                 //Subsequently we just match what we found with the new ones
                 else {
-                    if (hasBread) {
-                        bread_box = breadFinder(image, rad, false, &hasBread, relativePath);
-                        writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", bread_box, BREAD);
-                    }
                     for(size_t i = 0; i < plates.size(); i++){
+
                        // check each plate with the ones we already recognized
                         int curr_index = 0;
                         Rect plate_rect = findNewPosition(plates[i], recognizedFood, curr_index);
-                        //if it's a second or side dish check the other
-                        if (PORK <= curr_index <= SEAFOOD) {
+                        //if it's a second or side dish we need to recognize the other one
+                        cout << "current label: " << recognizedFoodID[curr_index] << endl;
+                        //if it's a second dish, so it's between PORK and SEAFOOD
+                        if (PORK <= recognizedFoodID[curr_index] && recognizedFoodID[curr_index] <= SEAFOOD){
                             int side_ixd = 0;
                             //find in the recognizedFood the side dish and put it in a vector
                             vector<Mat> side_dishes;
+                            vector<int> side_dishes_ixd;
                             for (size_t j = 0; j < recognizedFood.size(); j++){
-                                if (BEANS <= recognizedFoodID[j] <= POTATOES){
+                                if (BEANS <= recognizedFoodID[j] && recognizedFoodID[j] <= POTATOES){
                                     side_dishes.push_back(recognizedFood[j]);
+                                    side_dishes_ixd.push_back(recognizedFoodID[j]);
                                 }
+                            }
+                            //print side_dishes_ixd for debug
+                            cout << "side_dishes_ixd: ";
+                            for (size_t j = 0; j < side_dishes_ixd.size(); j++){
+                                cout << side_dishes_ixd[j] << " ";
                             }
                             Rect side_rect = findNewPosition(plates[i], side_dishes, side_ixd);
                             //transform the rectangle in the original image
                             side_rect.x += circles[i][0] - circles[i][2];
                             side_rect.y += circles[i][1] - circles[i][2];
                             //write the bounding box
-                            writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", side_rect, recognizedFoodID[side_ixd]);
+                            writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", side_rect, side_dishes_ixd[side_ixd]);
                             rectangle(image, side_rect, Scalar(32, 21, 96), 2);
+                            //print the rectangle dimensions for debug
+                            cout << "side dish: " << side_rect.x << " " << side_rect.y << " " << side_rect.width << " " << side_rect.height << endl;
                         }
-                        else if(BEANS <= curr_index <= POTATOES){
+                        else if(BEANS <= recognizedFoodID[curr_index] && recognizedFoodID[curr_index] <= POTATOES){
                             int second_ixd = 0;
                             //find in the recognizedFood the side dish and put it in a vector
                             vector<Mat> second_dishes;
+                            vector<int> second_dishes_ixd;
                             for (size_t j = 0; j < recognizedFood.size(); j++){
-                                if (PORK <= recognizedFoodID[j] <= SEAFOOD){
+                                if (PORK <= recognizedFoodID[j] && recognizedFoodID[j] <= SEAFOOD){
                                     second_dishes.push_back(recognizedFood[j]);
+                                    second_dishes_ixd.push_back(recognizedFoodID[j]);
                                 }
                             }
                             Rect second_dish = findNewPosition(plates[i], second_dishes, second_ixd);
@@ -225,8 +250,11 @@ int main(int argc, char** argv) {
                             second_dish.x += circles[i][0] - circles[i][2];
                             second_dish.y += circles[i][1] - circles[i][2];
                             //write the bounding box
-                            writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", second_dish, recognizedFoodID[second_ixd]);
+                            cout << second_dishes_ixd[second_ixd] << endl;
+                            writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", second_dish, second_dishes_ixd[second_ixd]);
                             rectangle(image, second_dish, Scalar(32, 21, 96), 2);
+                            //print the rectangle dimensions for debug
+                            cout << "second dish: " << second_dish.x << " " << second_dish.y << " " << second_dish.width << " " << second_dish.height << endl;
                         }
                        // transform the rectangle in the original image
                         plate_rect.x += circles[i][0] - circles[i][2];
@@ -235,6 +263,9 @@ int main(int argc, char** argv) {
                         rectangle(image, plate_rect, Scalar(0, 254, 32), 2);
                         imshow("Sec", image);
                         writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", plate_rect, recognizedFoodID[curr_index]);
+                        //print the rectangle dimensions for debug
+                        cout << "plate: " << plate_rect.x << " " << plate_rect.y << " " << plate_rect.width << " " << plate_rect.height << endl;
+
                        // Replace the recognized in the same place, to better classify the subsequent
                         recognizedFood[curr_index] = plates[i];
                     }

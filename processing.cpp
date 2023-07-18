@@ -119,7 +119,7 @@ Rect breadFinder(Mat& result, int radius, bool check, bool* hasBread, const std:
         //imshow("Rec", result);
         rec = Rect(topLeft, bottomRight);
     }
-
+    *hasBread = true;
     return rec;
 }
 
@@ -483,13 +483,17 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
     // Mask the white in all images
     for (int i = 0; i < fit.size(); i++) {
         cv::Mat mask;
-        cv::inRange(fit[i], cv::Scalar(210, 210, 210), cv::Scalar(255, 255, 255), mask);
+        cv::inRange(fit[i], cv::Scalar(180, 180, 180), cv::Scalar(255, 255, 255), mask);
         fit[i].setTo(cv::Scalar(0, 0, 0), mask);
     }
     cv::Mat mask;
-    cv::inRange(original, cv::Scalar(210, 210, 210), cv::Scalar(255, 255, 255), mask);
+    cv::inRange(original, cv::Scalar(180, 180, 180), cv::Scalar(255, 255, 255), mask);
     original.setTo(cv::Scalar(0, 0, 0), mask);
-    
+    // Cut the fit images by a little bit to remove the background
+    std::vector<cv::Mat> fit2;
+    for (int i = 0; i < fit.size(); i++) {
+        fit2.push_back(fit[i](cv::Rect(fit[i].cols / 6, fit[i].rows / 6, fit[i].cols / 1.2, fit[i].rows / 1.2)));
+    }
     // For each image in fit find the keypoints and descriptors
     std::vector<cv::KeyPoint> keypoints1, keypoints2;
     cv::Mat descriptors1, descriptors2;
@@ -501,7 +505,9 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
     int best = -1;
     int best_matches = 0;
     for (int i = 0; i < fit.size(); i++) {
-        (*orb).detectAndCompute(fit[i], cv::Mat(), keypoints2, descriptors2);
+        // use the center of the image to find the best match (to remove the background)
+        cv::Mat center = fit[i](cv::Rect(fit[i].cols / 4, fit[i].rows / 4, fit[i].cols / 2, fit[i].rows / 2));
+        (*orb).detectAndCompute(center, cv::Mat(), keypoints2, descriptors2);
         matcher.match(descriptors1, descriptors2, matches);
         if (matches.size() > best_matches) {
             best_matches = matches.size();
@@ -511,25 +517,15 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
     }
     // If no match is found return an empty rectangle
     if (best != -1) {
-        // find the rectangle of the best match
-        std::vector<cv::Point2f> obj;
-        std::vector<cv::Point2f> scene;
-
-        for (int i = 0; i < matches.size(); i++) {
-            obj.push_back(keypoints1[matches[i].queryIdx].pt);
-            scene.push_back(keypoints2[matches[i].trainIdx].pt);
-        }
-
-        cv::Mat H = cv::findHomography(obj, scene, cv::RANSAC);
-        std::vector<cv::Point2f> obj_corners(4);
-        obj_corners[0] = cv::Point2f(0, 0);
-        obj_corners[1] = cv::Point2f(original.cols, 0);
-        obj_corners[2] = cv::Point2f(original.cols, original.rows);
-        obj_corners[3] = cv::Point2f(0, original.rows);
-        std::vector<cv::Point2f> scene_corners(4);
-        cv::perspectiveTransform(obj_corners, scene_corners, H);
-        cv::Rect rect = cv::boundingRect(scene_corners);
-        //make sure the rec is within the image
+        // Use the best match to do template matching and find the new bounding box
+        cv::Mat result;
+        cv::matchTemplate(original, fit2[best], result, cv::TM_SQDIFF_NORMED);
+        double minVal, maxVal;
+        cv::Point minLoc, maxLoc;
+        cv::minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+        cv::Rect rect = cv::Rect(minLoc.x, minLoc.y, fit2[best].cols, fit2[best].rows);
+        
+        // Check if the bounding box is inside the image
         if (rect.x < 0) {
             rect.width += rect.x;
             rect.x = 0;
@@ -538,20 +534,13 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
             rect.height += rect.y;
             rect.y = 0;
         }
-        if (rect.x + rect.width > fit[best].cols) {
-            rect.width = fit[best].cols - rect.x;
+        if (rect.x + rect.width > original.cols) {
+            rect.width = original.cols - rect.x;
         }
-        if (rect.y + rect.height > fit[best].rows) {
-            rect.height = fit[best].rows - rect.y;
+        if (rect.y + rect.height > original.rows) {
+            rect.height = original.rows - rect.y;
         }
-        //if the rectangle is too small return a bigger one
-        if (rect.width < 50 || rect.height < 50) {
-            rect.x = 0;
-            rect.y = 0;
-            rect.width = fit[best].cols;
-            rect.height = fit[best].rows;
-        }
-
+        
         return rect;
 
     }
