@@ -15,6 +15,6 @@ int firstorSecond(cv::Mat& image);
 void writeBoundBox(const std::string& path, cv::Rect box, int ID);
 int pastaRecognition(cv::Mat& image);
 cv::Rect matchSalad(cv::Mat& image, const std::string& relativePath);
-cv::Rect findNewPosition(cv::Mat& original, std::vector<cv::Mat> fit, int& MatchID);
+cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchID);
 
 #endif

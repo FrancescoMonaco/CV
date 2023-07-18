@@ -128,7 +128,7 @@ int main(int argc, char** argv) {
                             continue;
                         }
                         //check if it is the first or second dish
-                        int dish = 1;//firstorSecond(plates[i]);
+                        int dish = 2;//firstorSecond(plates[i]);
                         //if it is the first dish
                         if (dish == 1){
                             //classify the pasta
@@ -185,13 +185,53 @@ int main(int argc, char** argv) {
                 }
                 //Subsequently we just match what we found with the new ones
                 else {
+                    if (hasBread) {
+                        bread_box = breadFinder(image, rad, false, &hasBread, relativePath);
+                        writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", bread_box, BREAD);
+                    }
                     for(size_t i = 0; i < plates.size(); i++){
                        // check each plate with the ones we already recognized
                         int curr_index = 0;
-                       Rect plate_rect = findNewPosition(plates[i], recognizedFood, curr_index);
+                        Rect plate_rect = findNewPosition(plates[i], recognizedFood, curr_index);
+                        //if it's a second or side dish check the other
+                        if (PORK <= curr_index <= SEAFOOD) {
+                            int side_ixd = 0;
+                            //find in the recognizedFood the side dish and put it in a vector
+                            vector<Mat> side_dishes;
+                            for (size_t j = 0; j < recognizedFood.size(); j++){
+                                if (BEANS <= recognizedFoodID[j] <= POTATOES){
+                                    side_dishes.push_back(recognizedFood[j]);
+                                }
+                            }
+                            Rect side_rect = findNewPosition(plates[i], side_dishes, side_ixd);
+                            //transform the rectangle in the original image
+                            side_rect.x += circles[i][0] - circles[i][2];
+                            side_rect.y += circles[i][1] - circles[i][2];
+                            //write the bounding box
+                            writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", side_rect, recognizedFoodID[side_ixd]);
+                            rectangle(image, side_rect, Scalar(32, 21, 96), 2);
+                        }
+                        else if(BEANS <= curr_index <= POTATOES){
+                            int second_ixd = 0;
+                            //find in the recognizedFood the side dish and put it in a vector
+                            vector<Mat> second_dishes;
+                            for (size_t j = 0; j < recognizedFood.size(); j++){
+                                if (PORK <= recognizedFoodID[j] <= SEAFOOD){
+                                    second_dishes.push_back(recognizedFood[j]);
+                                }
+                            }
+                            Rect second_dish = findNewPosition(plates[i], second_dishes, second_ixd);
+                            //transform the rectangle in the original image
+                            second_dish.x += circles[i][0] - circles[i][2];
+                            second_dish.y += circles[i][1] - circles[i][2];
+                            //write the bounding box
+                            writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", second_dish, recognizedFoodID[second_ixd]);
+                            rectangle(image, second_dish, Scalar(32, 21, 96), 2);
+                        }
                        // transform the rectangle in the original image
                         plate_rect.x += circles[i][0] - circles[i][2];
                         plate_rect.y += circles[i][1] - circles[i][2];
+
                         rectangle(image, plate_rect, Scalar(0, 254, 32), 2);
                         imshow("Sec", image);
                         writeBoundBox(entry.path().string() + PREDS_BB + name + "_bouding_box.txt", plate_rect, recognizedFoodID[curr_index]);

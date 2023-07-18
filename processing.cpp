@@ -545,7 +545,7 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
             rect.height = fit[best].rows - rect.y;
         }
         //if the rectangle is too small return a bigger one
-        if (rect.width < 10 || rect.height < 10) {
+        if (rect.width < 50 || rect.height < 50) {
             rect.x = 0;
             rect.y = 0;
             rect.width = fit[best].cols;
