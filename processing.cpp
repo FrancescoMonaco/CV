@@ -1,4 +1,5 @@
 #include "processing.h"
+#include "visualize_image.h"
 using namespace std;
 using namespace cv;
 
@@ -8,8 +9,8 @@ Rect breadFinder(Mat& result, int radius, bool check, bool* hasBread, const std:
     Mat hsv_image, mask2, mask3, bread_image2;
 
     // Load the templates and check for their existence
-    Mat bread_template = imread(RelPath+ "/pan_br.jpeg");
-    Mat crumbs_template = imread(RelPath+ "/pan_left.jpg");
+    Mat bread_template = imread(RelPath + "/pan_br.jpeg");
+    Mat crumbs_template = imread(RelPath + "/pan_left.jpg");
 
     if (bread_template.data == NULL || crumbs_template.data == NULL)
         throw invalid_argument("Data does not exist");
@@ -212,23 +213,64 @@ Rect matchSalad(Mat& image, const std::string& relativePath) {
     return rec;
 }
 
-int firstorSecond(cv::Mat &image)
-{   
-    //compute the hu moments of the image, Cannyed
-    Moments mu = moments(image, true);
-    double hu[7];
-    HuMoments(mu, hu);
-    //print the hu moments
-    for (int i = 0; i < 7; i++) {
-        cout << hu[i] << endl;
+int firstorSecond(cv::Mat firstCircle, cv::Mat secondCircle)
+{
+    visualize_image(firstCircle, "segmentedImage1");
+
+    visualize_image(secondCircle, "segmentedImage2");
+
+    if (firstCircle.type() != CV_64F) {
+        firstCircle.convertTo(firstCircle, CV_64F);
     }
-    imshow("Canny", image);
+
+    std::vector<double> region_label;
+
+    for (int i = 0; i < firstCircle.rows; i++) {
+        for (int j = 0; j < firstCircle.cols; j++) {
+            double temp = firstCircle.at<double>(i, j);
+            auto trovato = std::find(region_label.begin(), region_label.end(), temp);
+
+            // non trovato
+            if (trovato == region_label.end()) {
+                region_label.push_back(temp);
+            }
+        }
+    }
+    
+    int numLabels1 = region_label.size();
+
+    region_label.clear();
+
+    if (secondCircle.type() != CV_64F) {
+        secondCircle.convertTo(secondCircle, CV_64F);
+    }
 
 
+    for (int i = 0; i < secondCircle.rows; i++) {
+        for (int j = 0; j < secondCircle.cols; j++) {
+            double temp = secondCircle.at<double>(i, j);
+            auto trovato = std::find(region_label.begin(), region_label.end(), temp);
 
-    waitKey(0);
+            // non trovato
+            if (trovato == region_label.end()) {
+                region_label.push_back(temp);
+            }
+        }
+    }
 
-    return 0;
+    int numLabels2 = region_label.size();
+
+    //if the first plate has less labels, than it should be a first
+    if (numLabels1 < numLabels2) {
+        return 1;
+    }
+    else {
+        if (numLabels1 > numLabels2) {
+            return 2;
+        }
+        else
+            return 0;
+    }
 }
 
 
@@ -247,7 +289,7 @@ void writeBoundBox(const std::string& path, Rect box, int ID)
 cv::Rect sideDishClassifier(cv::Mat& in1, const std::string& relativePath, int& ID)
 {
     // Load the two templates
-    Mat potato_template = imread( relativePath + "/patate.jpg");
+    Mat potato_template = imread(relativePath + "/patate.jpg");
     Mat beans_template = imread(relativePath + "/fagioli.jpg");
     Mat gray_potato, gray_bean, gray_in;
     cv::cvtColor(in1, gray_in, cv::COLOR_BGR2GRAY);
@@ -273,8 +315,8 @@ cv::Rect sideDishClassifier(cv::Mat& in1, const std::string& relativePath, int& 
     // Find the max and use that template to locate the side dish
     Mat template_to_use;
     if (dist1 > dist2) {
-       template_to_use = edges_potato;
-       ID = POTATOES;
+        template_to_use = edges_potato;
+        ID = POTATOES;
     }
     else {
         template_to_use = edges_bean;
@@ -290,14 +332,14 @@ cv::Rect sideDishClassifier(cv::Mat& in1, const std::string& relativePath, int& 
     Point minLoc, maxLoc;
     minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
 
-   // Create a rect in the corner of the image
-    int x = 0.05*in1.cols;
-    int y = 0.05*in1.rows;
-    int width = in1.cols - 0.25*in1.cols;
-    int height = in1.rows - 0.25*in1.rows;
+    // Create a rect in the corner of the image
+    int x = 0.05 * in1.cols;
+    int y = 0.05 * in1.rows;
+    int width = in1.cols - 0.25 * in1.cols;
+    int height = in1.rows - 0.25 * in1.rows;
     // Move a bit to the minimum point
-    x += 0.05*minLoc.x;
-    y += 0.05*minLoc.y;
+    x += 0.05 * minLoc.x;
+    y += 0.05 * minLoc.y;
 
     if (x < 0) {
         width += x;
@@ -318,7 +360,7 @@ cv::Rect sideDishClassifier(cv::Mat& in1, const std::string& relativePath, int& 
     return rec;
 }
 
-cv::Rect secondDishClassifier(cv::Mat &in1, const std::string& relativePath, int& ID)
+cv::Rect secondDishClassifier(cv::Mat& in1, const std::string& relativePath, int& ID)
 {
     // Load the four templates
     Mat rabbit_template = imread(relativePath + "/rabbit.png");
@@ -333,7 +375,7 @@ cv::Rect secondDishClassifier(cv::Mat &in1, const std::string& relativePath, int
     cv::cvtColor(fish_template, hsv_fish, cv::COLOR_BGR2HSV);
     cv::cvtColor(sea_template, hsv_sea, cv::COLOR_BGR2HSV);
     cv::cvtColor(in1, hsv_in, cv::COLOR_BGR2HSV);
-    
+
     // Compute the histograms of the templates and the image
     cv::Mat hist_rabbit, hist_pork, hist_fish, hist_sea, hist_in;
     int histSize[] = { 8, 8, 8 };  // Number of bins for each channel
@@ -361,7 +403,7 @@ cv::Rect secondDishClassifier(cv::Mat &in1, const std::string& relativePath, int
     double pork_score = compareHist(hist_pork, hist_in, HISTCMP_INTERSECT);
     double fish_score = compareHist(hist_fish, hist_in, HISTCMP_INTERSECT);
     double sea_score = compareHist(hist_sea, hist_in, HISTCMP_INTERSECT);
-    
+
     // Find the max and use that template to locate the second dish
     Mat template_to_use;
     if (rabbit_score > pork_score && rabbit_score > fish_score && rabbit_score > sea_score) {
@@ -524,7 +566,7 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
         cv::Point minLoc, maxLoc;
         cv::minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
         cv::Rect rect = cv::Rect(minLoc.x, minLoc.y, fit2[best].cols, fit2[best].rows);
-        
+
         // Check if the bounding box is inside the image
         if (rect.x < 0) {
             rect.width += rect.x;
@@ -540,11 +582,48 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
         if (rect.y + rect.height > original.rows) {
             rect.height = original.rows - rect.y;
         }
-        
+
         return rect;
 
     }
-    else{
+    else {
         return cv::Rect();
     }
+}
+
+void labelSegmentation(cv::Mat& local, cv::Mat& final, cv::Rect where,int ID){
+    //  take local and extract the Rect where
+    cv::Mat local2 = local(where);
+
+    // find the most common number in local2
+    int histSize[] = {256}; // Number of bins 
+    float range[] = {0, 256}; // Range of pixel values
+    const float* histRange[] = {range};
+    cv::Mat hist;
+    cv::calcHist(&local2, 1, 0, cv::Mat(), hist, 1, histSize, histRange);
+
+    // Find the bin with the most common label
+    int most_common_label = 0;
+    int max_count = 0;
+    for (int i = 0; i < hist.rows; ++i) {
+        int count = hist.at<float>(i);
+        if (count > max_count) {
+            max_count = count;
+            most_common_label = i;
+        }
+    }
+
+    // Substitute the most common label with ID, set the rest to 0 and copy to final into the correct position
+    for (int i = 0; i < local2.rows; i++) {
+        for (int j = 0; j < local2.cols; j++) {
+            if (local2.at<uchar>(i, j) == most_common_label) {
+                local2.at<uchar>(i, j) = ID;
+            }
+            else {
+                local2.at<uchar>(i, j) = 0;
+            }
+        }
+    }
+    local2.copyTo(final(where));
+
 }

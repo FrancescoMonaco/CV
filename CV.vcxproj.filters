@@ -24,6 +24,30 @@
     <ClCompile Include="processing.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="color_quantization.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Final_main.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="getImageBoxes.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="J_image.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="merging.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="peer_filter.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="region_growing.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="visualize_image.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
@@ -33,6 +57,27 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="processing.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="color_quantization.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="getImageBoxes.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="J_image.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="merging.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="peer_filter.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="region_growing.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="visualize_image.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

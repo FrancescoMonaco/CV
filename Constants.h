@@ -18,10 +18,10 @@ const std::string PREDS_BB = "/box_preds/";
 const std::string PREDS_SS = "/mask_preds/";
 
 // LABELS
-const int BACKGROUND = 0,\
-    PESTO = 1, TOMATO = 2, MEAT_SAU = 3, CLAMS = 4, RICE = 5,\
-    PORK = 6, FISH = 7, RABBIT = 8, SEAFOOD = 9,\
-    BEANS = 10, POTATOES = 11,\
-    SALAD = 12, BREAD = 13;
+const int BACKGROUND = 0, \
+PESTO = 1, TOMATO = 2, MEAT_SAU = 3, CLAMS = 4, RICE = 5, \
+PORK = 6, FISH = 7, RABBIT = 8, SEAFOOD = 9, \
+BEANS = 10, POTATOES = 11, \
+SALAD = 12, BREAD = 13;
 
 #endif // !Constants

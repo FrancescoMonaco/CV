@@ -113,6 +113,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,16 +141,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="color_quantization.cpp" />
     <ClCompile Include="CV.cpp" />
+    <ClCompile Include="Final_main.cpp" />
+    <ClCompile Include="getImageBoxes.cpp" />
+    <ClCompile Include="J_image.cpp" />
+    <ClCompile Include="merging.cpp" />
+    <ClCompile Include="peer_filter.cpp" />
     <ClCompile Include="processing.cpp" />
     <ClCompile Include="Project_Main.cpp" />
+    <ClCompile Include="region_growing.cpp" />
+    <ClCompile Include="visualize_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="color_quantization.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="getImageBoxes.h" />
+    <ClInclude Include="J_image.h" />
+    <ClInclude Include="merging.h" />
+    <ClInclude Include="peer_filter.h" />
     <ClInclude Include="processing.h" />
+    <ClInclude Include="region_growing.h" />
+    <ClInclude Include="visualize_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
