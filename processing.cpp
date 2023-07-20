@@ -213,64 +213,18 @@ Rect matchSalad(Mat& image, const std::string& relativePath) {
     return rec;
 }
 
-int firstorSecond(cv::Mat firstCircle, cv::Mat secondCircle)
+int firstorSecond(cv::Mat firstCircle)
 {
-    visualize_image(firstCircle, "segmentedImage1");
-
-    visualize_image(secondCircle, "segmentedImage2");
-
-    if (firstCircle.type() != CV_64F) {
-        firstCircle.convertTo(firstCircle, CV_64F);
-    }
-
-    std::vector<double> region_label;
-
-    for (int i = 0; i < firstCircle.rows; i++) {
-        for (int j = 0; j < firstCircle.cols; j++) {
-            double temp = firstCircle.at<double>(i, j);
-            auto trovato = std::find(region_label.begin(), region_label.end(), temp);
-
-            // non trovato
-            if (trovato == region_label.end()) {
-                region_label.push_back(temp);
-            }
-        }
-    }
-    
-    int numLabels1 = region_label.size();
-
-    region_label.clear();
-
-    if (secondCircle.type() != CV_64F) {
-        secondCircle.convertTo(secondCircle, CV_64F);
-    }
-
-
-    for (int i = 0; i < secondCircle.rows; i++) {
-        for (int j = 0; j < secondCircle.cols; j++) {
-            double temp = secondCircle.at<double>(i, j);
-            auto trovato = std::find(region_label.begin(), region_label.end(), temp);
-
-            // non trovato
-            if (trovato == region_label.end()) {
-                region_label.push_back(temp);
-            }
-        }
-    }
-
-    int numLabels2 = region_label.size();
-
-    //if the first plate has less labels, than it should be a first
-    if (numLabels1 < numLabels2) {
+    //put fisrtCircle in grayscale
+    cv::Mat firstCircleGray;
+    cv::cvtColor(firstCircle, firstCircleGray, cv::COLOR_BGR2GRAY);
+    std::vector<cv::Vec3f> circles;
+    cv::HoughCircles(firstCircleGray, circles, cv::HOUGH_GRADIENT, 1, firstCircleGray.rows / 2.5, 140, 55, 75, 185);
+    //if there are no circles in the firstCircle, it means that it is the second dish
+    if (circles.size() == 0)
+        return 2;
+    else
         return 1;
-    }
-    else {
-        if (numLabels1 > numLabels2) {
-            return 2;
-        }
-        else
-            return 0;
-    }
 }
 
 

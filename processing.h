@@ -33,11 +33,10 @@ cv::Rect sideDishClassifier(cv::Mat& in1, const std::string& relativePath, int& 
 cv::Rect secondDishClassifier(cv::Mat& in1, const std::string& relativePath, int& ID);
 
 
-/// @brief Given two segmentations finds if the first is a First Dish or a Second Dish
+/// @brief Given a box finds if it is a First Dish or a Second Dish
 /// @param firstCircle , segmentation of the image that contains the first circle
-/// @param secondCircle , segmentation of the image that contains the second circle
-/// @return 1 if first circle is a First Dish, 2 if first circle is a Second Dish, 0 otherwise
-int firstorSecond(cv::Mat firstCircle, cv::Mat secondCircle);
+/// @return 1 if first circle is a First Dish, 2 if first circle is a Second Dish
+int firstorSecond(cv::Mat firstCircle);
 
 /// @brief Writes the bounding box of the dish in a file
 /// @param path , path of the file where to write the bounding box
