@@ -71,4 +71,10 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
 /// @param ID , ID of the dish
 void labelSegmentation(cv::Mat& local, cv::Mat& final, cv::Rect where,int ID);
 
+/// @brief Creates a global segmentation from local maps
+/// @param recognizedFoodSegmented , cropped local segmentation
+/// @param recognizedFoodID , ID of the dishes
+void reassignCorrectLabels(std::vector<cv::Mat>& recognizedFoodSegmented, std::vector<int> recognizedFoodID);
+
+
 #endif

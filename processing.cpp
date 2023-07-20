@@ -1,5 +1,6 @@
 #include "processing.h"
 #include "visualize_image.h"
+#include <map>
 using namespace std;
 using namespace cv;
 
@@ -581,5 +582,179 @@ void labelSegmentation(cv::Mat& local, cv::Mat& final, cv::Rect where,int ID){
         }
     }
     local2.copyTo(final(where));
+
+}
+
+void reassignCorrectLabels(std::vector<cv::Mat>& recognizedFoodSegmented, std::vector<int> recognizedFoodID) {
+    std::vector<cv::Vec3b> customColormap = {
+    cv::Vec3b(0, 0, 0),       // Black
+    cv::Vec3b(0, 255, 0),     // Green
+    cv::Vec3b(0, 0, 255),     // Blue
+    cv::Vec3b(255, 255, 0),   // Yellow
+    cv::Vec3b(255, 0, 255),   // Magenta
+    cv::Vec3b(0, 255, 255),   // Cyan
+    cv::Vec3b(255, 128, 0),   // Orange
+    cv::Vec3b(128, 0, 255),   // Purple
+    cv::Vec3b(0, 255, 128),   // Lime
+    cv::Vec3b(255, 128, 128), // Pink
+    cv::Vec3b(128, 255, 128), // Light Green
+    cv::Vec3b(128, 128, 255), // Light Blue
+    cv::Vec3b(255, 255, 128), // Light Yellow
+    cv::Vec3b(128, 255, 255)  // Light Cyan
+    };
+
+    for (int p = 0; p < recognizedFoodSegmented.size(); p++) {
+        //assume that the top left corner belongs to the background
+        const double rows = recognizedFoodSegmented[p].rows;
+        const double cols = recognizedFoodSegmented[p].cols;
+
+        double assignedBackgroundRegion = recognizedFoodSegmented[p].at<double>(0, 0);
+
+        std::map<double, int> pixelPerRegion;
+
+        //if the image corresponds to a second dish
+        if (recognizedFoodID[p] == PORK || recognizedFoodID[p] == FISH || recognizedFoodID[p] == RABBIT) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (recognizedFoodSegmented[p].at<double>(i, j) == assignedBackgroundRegion) {
+                        recognizedFoodSegmented[p].at<double>(i, j) = BACKGROUND;
+                    }
+                    else {
+                        pixelPerRegion[recognizedFoodSegmented[p].at<double>(i, j)]++;
+                    }
+                }
+            }
+
+            //find the most populated region and assign them in order side dish and meat 
+            std::vector<std::pair<double, int>> orderedRegions;
+
+            // Copy key-value pair from Map
+            // to vector of pairs
+            for (auto& it : pixelPerRegion) {
+                orderedRegions.push_back(it);
+            }
+
+            // Sort using comparator function
+            sort(orderedRegions.begin(), orderedRegions.end(), [](pair<double, int>& a, pair<double, int>& b)
+                {
+                    return a.second < b.second;
+                });
+
+            //take the biggest region for side dish and second most populated for main dish
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (recognizedFoodSegmented[p].at<double>(i, j) == orderedRegions[orderedRegions.size() - 1].first) {
+                        switch (recognizedFoodID[p]) {
+                        case PORK:
+                            recognizedFoodSegmented[p].at<double>(i, j) = PORK;
+                            break;
+                        case FISH:
+                            recognizedFoodSegmented[p].at<double>(i, j) = FISH;
+                            break;
+                        case RABBIT:
+                            recognizedFoodSegmented[p].at<double>(i, j) = RABBIT;
+                            break;
+                        }
+                    }
+                    else {
+                        if (recognizedFoodSegmented[p].at<double>(i, j) == orderedRegions[orderedRegions.size() - 2].first) {
+                            switch (recognizedFoodID[p + 1]) {
+                            case SEAFOOD:
+                                recognizedFoodSegmented[p].at<double>(i, j) = SEAFOOD;
+                                break;
+                            case BEANS:
+                                recognizedFoodSegmented[p].at<double>(i, j) = BEANS;
+                                break;
+                            case POTATOES:
+                                recognizedFoodSegmented[p].at<double>(i, j) = POTATOES;
+                                break;
+                            }
+                        }
+                        else {
+                            recognizedFoodSegmented[p].at<double>(i, j) = BACKGROUND;
+                        }
+                    }
+                }
+            }
+
+            //at the next position the image is the same
+            recognizedFoodSegmented[p + 1] = recognizedFoodSegmented[p];
+            p++;
+        }
+        else {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (recognizedFoodSegmented[p].at<double>(i, j) == assignedBackgroundRegion) {
+                        recognizedFoodSegmented[p].at<double>(i, j) = BACKGROUND;
+                    }
+                    else {
+                        pixelPerRegion[recognizedFoodSegmented[p].at<double>(i, j)]++;
+                    }
+                }
+            }
+
+            //find the most populated region and assign them in order side dish and meat 
+            std::vector<std::pair<double, int>> orderedRegions;
+
+            // Copy key-value pair from Map
+            // to vector of pairs
+            for (auto& it : pixelPerRegion) {
+                orderedRegions.push_back(it);
+            }
+
+            // Sort using comparator function
+            sort(orderedRegions.begin(), orderedRegions.end(), [](pair<double, int>& a, pair<double, int>& b)
+                {
+                    return a.second < b.second;
+                });
+
+            //take the biggest region for side dish and second most populated for main dish
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (recognizedFoodSegmented[p].at<double>(i, j) == orderedRegions[orderedRegions.size() - 1].first) {
+                        switch (recognizedFoodID[p]) {
+                        case PESTO:
+                            recognizedFoodSegmented[p].at<double>(i, j) = PESTO;
+                            break;
+                        case TOMATO:
+                            recognizedFoodSegmented[p].at<double>(i, j) = TOMATO;
+                            break;
+                        case MEAT_SAU:
+                            recognizedFoodSegmented[p].at<double>(i, j) = MEAT_SAU;
+                            break;
+                        case CLAMS:
+                            recognizedFoodSegmented[p].at<double>(i, j) = CLAMS;
+                            break;
+                        case RICE:
+                            recognizedFoodSegmented[p].at<double>(i, j) = RICE;
+                            break;
+                        case SALAD:
+                            recognizedFoodSegmented[p].at<double>(i, j) = SALAD;
+                            break;
+                        case BREAD:
+                            recognizedFoodSegmented[p].at<double>(i, j) = BREAD;
+                            break;
+                        }
+                    }
+                    else {
+                        recognizedFoodSegmented[p].at<double>(i, j) = BACKGROUND;
+                    }
+                }
+            }
+        }
+
+        cv::Mat imageColored(recognizedFoodSegmented[p].size(), CV_8UC3);
+
+        for (int i = 0; i < recognizedFoodSegmented[p].rows; i++) {
+            for (int j = 0; j < recognizedFoodSegmented[p].cols; j++) {
+                int index = recognizedFoodSegmented[p].at<double>(i, j);
+                imageColored.at<cv::Vec3b>(i, j) = customColormap[index];
+            }
+        }
+
+        cv::imshow("Recolored image", imageColored);
+        cv::waitKey(0);
+
+    }
 
 }
