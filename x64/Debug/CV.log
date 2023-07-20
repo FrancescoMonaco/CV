@@ -1,152 +1,4 @@
-﻿  Final_main.cpp
-  Project_Main.cpp
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(133,63): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(134,63): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(154,49): warning C4244: '=': conversione da 'double' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(155,49): warning C4244: '=': conversione da 'double' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(156,63): warning C4244: '=': conversione da 'double' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(157,64): warning C4244: '=': conversione da 'double' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(159,59): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(160,59): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(176,59): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(177,59): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(186,57): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(187,57): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(229,58): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(230,58): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(250,60): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(251,60): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(260,55): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-C:\Users\franc\source\repos\CV\CV\Project_Main.cpp(261,55): warning C4244: '+=': conversione da '_Tp' a '_Tp'. Possibile perdita di dati.
-          with
-          [
-              _Tp=float
-          ]
-          and
-          [
-              _Tp=int
-          ]
-  processing.cpp
+﻿  processing.cpp
 C:\Users\franc\source\repos\CV\CV\processing.cpp(104,58): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
@@ -187,33 +39,35 @@ C:\Users\franc\source\repos\CV\CV\processing.cpp(118,36): warning C4244: 'argome
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\processing.cpp(240,41): warning C4267: 'inizializzazione': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(261,41): warning C4267: 'inizializzazione': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(336,11): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(337,11): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(338,15): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(339,16): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(341,15): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(342,15): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(509,20): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(510,20): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(511,20): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(512,20): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(537,105): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(303,11): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(304,11): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(305,15): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(306,16): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(308,15): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(309,15): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(476,20): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(477,20): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(478,20): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(479,20): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(504,105): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\processing.cpp(537,86): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(504,86): warning C4244: 'argomento': conversione da 'double' a '_Tp'. Possibile perdita di dati.
           with
           [
               _Tp=int
           ]
-C:\Users\franc\source\repos\CV\CV\processing.cpp(555,42): warning C4267: '=': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-C:\Users\franc\source\repos\CV\CV\processing.cpp(609,19): warning C4244: 'inizializzazione': conversione da '_Tp' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(523,11): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(524,11): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(525,15): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(526,16): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(527,15): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(528,15): warning C4244: '+=': conversione da 'double' a 'int'. Possibile perdita di dati.
+C:\Users\franc\source\repos\CV\CV\processing.cpp(565,19): warning C4244: 'inizializzazione': conversione da '_Tp' a 'int'. Possibile perdita di dati.
           with
           [
               _Tp=float
           ]
-  Generazione del codice in corso...
   CV.vcxproj -> C:\Users\franc\source\repos\CV\x64\Debug\CV.exe

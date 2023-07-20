@@ -213,18 +213,31 @@ Rect matchSalad(Mat& image, const std::string& relativePath) {
     return rec;
 }
 
-int firstorSecond(cv::Mat firstCircle)
+int firstorSecond(cv::Mat firstCircle, cv::Mat secondCircle, const std::string& relativePath)
 {
-    //put fisrtCircle in grayscale
-    cv::Mat firstCircleGray;
-    cv::cvtColor(firstCircle, firstCircleGray, cv::COLOR_BGR2GRAY);
-    std::vector<cv::Vec3f> circles;
-    cv::HoughCircles(firstCircleGray, circles, cv::HOUGH_GRADIENT, 1, firstCircleGray.rows / 2.5, 140, 55, 75, 185);
-    //if there are no circles in the firstCircle, it means that it is the second dish
-    if (circles.size() == 0)
+    Mat pasta_temp = imread(relativePath + "/conchiglie.jpg");
+    // do template matching on firstCircle
+    Mat result;
+    matchTemplate(firstCircle, pasta_temp, result, TM_SQDIFF_NORMED);
+    double minVal, maxVal;
+    Point minLoc, maxLoc;
+    minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+    // do template matching on SecondCircle
+    Mat result2;
+    matchTemplate(secondCircle, pasta_temp, result2, TM_SQDIFF_NORMED);
+    double minVal2, maxVal2;
+    Point minLoc2, maxLoc2;
+    minMaxLoc(result2, &minVal2, &maxVal2, &minLoc2, &maxLoc2);
+
+    //the max is the first dish, if one of the two is above FS_THRESH is a second dish and the other is a first dish
+    if (minVal > FS_THRESH)
         return 2;
-    else
+    else if (minVal2 > FS_THRESH)
         return 1;
+    else if (minVal > minVal2)
+        return 1;
+    else
+        return 2;
 }
 
 
@@ -490,59 +503,48 @@ cv::Rect findNewPosition(cv::Mat original, std::vector<cv::Mat> fit, int& MatchI
     for (int i = 0; i < fit.size(); i++) {
         fit2.push_back(fit[i](cv::Rect(fit[i].cols / 6, fit[i].rows / 6, fit[i].cols / 1.2, fit[i].rows / 1.2)));
     }
-    // For each image in fit find the keypoints and descriptors
-    std::vector<cv::KeyPoint> keypoints1, keypoints2;
-    cv::Mat descriptors1, descriptors2;
-    cv::Ptr<cv::ORB> orb = cv::ORB::create();
-    (*orb).detectAndCompute(original, cv::Mat(), keypoints1, descriptors1);
-    std::vector<cv::DMatch> matches;
-    cv::BFMatcher matcher(cv::NORM_HAMMING);
-    // find the best match for original in fit and return the rectangle
-    int best = -1;
-    int best_matches = 0;
-    for (int i = 0; i < fit.size(); i++) {
-        // use the center of the image to find the best match (to remove the background)
-        cv::Mat center = fit[i](cv::Rect(fit[i].cols / 4, fit[i].rows / 4, fit[i].cols / 2, fit[i].rows / 2));
-        (*orb).detectAndCompute(center, cv::Mat(), keypoints2, descriptors2);
-        matcher.match(descriptors1, descriptors2, matches);
-        if (matches.size() > best_matches) {
-            best_matches = matches.size();
-            best = i;
-            MatchID = i;
+    // Do template matching with the original image and the find the best match
+    cv::Mat result;
+    matchTemplate(original, fit2[0], result, TM_SQDIFF_NORMED);
+    double minVal, maxVal;
+    Point minLoc, maxLoc;
+    minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+    int index = 0;
+    double min = minVal;
+    for (int i = 1; i < fit2.size(); i++) {
+        matchTemplate(original, fit2[i], result, TM_SQDIFF_NORMED);
+        minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
+        if (minVal < min) {
+            min = minVal;
+            index = i;
         }
     }
-    // If no match is found return an empty rectangle
-    if (best != -1) {
-        // Use the best match to do template matching and find the new bounding box
-        cv::Mat result;
-        cv::matchTemplate(original, fit2[best], result, cv::TM_SQDIFF_NORMED);
-        double minVal, maxVal;
-        cv::Point minLoc, maxLoc;
-        cv::minMaxLoc(result, &minVal, &maxVal, &minLoc, &maxLoc);
-        cv::Rect rect = cv::Rect(minLoc.x, minLoc.y, fit2[best].cols, fit2[best].rows);
-
-        // Check if the bounding box is inside the image
-        if (rect.x < 0) {
-            rect.width += rect.x;
-            rect.x = 0;
-        }
-        if (rect.y < 0) {
-            rect.height += rect.y;
-            rect.y = 0;
-        }
-        if (rect.x + rect.width > original.cols) {
-            rect.width = original.cols - rect.x;
-        }
-        if (rect.y + rect.height > original.rows) {
-            rect.height = original.rows - rect.y;
-        }
-
-        return rect;
-
+    // Use a rectangle of fixed size and move it a bit to the minimum point
+    int x = 0.05 * original.cols;
+    int y = 0.05 * original.rows;
+    int width = original.cols - 0.25 * original.cols;
+    int height = original.rows - 0.25 * original.rows;
+    x += 0.05 * minLoc.x;
+    y += 0.05 * minLoc.y;
+    MatchID = index;
+    
+    if (x < 0) {
+        width += x;
+        x = 0;
     }
-    else {
-        return cv::Rect();
+    if (y < 0) {
+        height += y;
+        y = 0;
     }
+    if (x + width > original.cols) {
+        width = original.cols - x;
+    }
+    if (y + height > original.rows) {
+        height = original.rows - y;
+    }
+    // Return the rectangle
+    return cv::Rect(x, y, width, height);
+
 }
 
 void labelSegmentation(cv::Mat& local, cv::Mat& final, cv::Rect where,int ID){

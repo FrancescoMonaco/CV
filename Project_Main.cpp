@@ -118,10 +118,8 @@ int main(int argc, char** argv) {
                     // put the black the things outside the circle
                     Mat mask = Mat::zeros(plate.size(), CV_8UC1);
                     circle(mask, Point(radius, radius), radius, Scalar(255), -1);
-                    Mat inverse_mask;
-                    bitwise_not(mask, inverse_mask);
                     Mat rec_plate;
-                    plate.copyTo(rec_plate, inverse_mask);
+                    plate.copyTo(rec_plate, mask);
                     plates_box.push_back(rec);
                     plates.push_back(rec_plate);
                 }
@@ -147,9 +145,27 @@ int main(int argc, char** argv) {
                             }
                             continue;
                         }
-
+                        
+                        // Take the index of the other plate
+                        int otherIndex = -1;
+                        if(plates.size() == 2){
+                           //take the other plate, it may be before or after
+                            if (i == 0) otherIndex = 1;
+                            else otherIndex = 0;
+                        }
+                        else{
+                            //take the plate with the greatest radius, that is not the current one
+                            int maxRadius = -1;
+                            for (size_t j = 0; j < plates.size(); j++){
+                                if (j == i) continue;
+                                if (cvRound(circles[j][2]) > maxRadius){
+                                    maxRadius = cvRound(circles[j][2]);
+                                    otherIndex = j;
+                                }
+                            }
+                        }
                         //FIRST OR SECOND DISH
-                        int dish = firstorSecond(plates[i]);
+                        int dish = firstorSecond(plates[i], plates[otherIndex], relativePath);
                         //if it is the FIRST DISH
                         if (dish == 1){
                             //classify the pasta

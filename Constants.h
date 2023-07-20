@@ -12,6 +12,7 @@ const int smallRadius = 287;
 const double lowerBound = 0.1;
 const double BREAD_THRESH = 0.73;
 const double SALAD_THRESH = 0.42;
+const double FS_THRESH = 0.5;
 
 // SUBFOLDERS
 const std::string PREDS_BB = "/box_preds/";
